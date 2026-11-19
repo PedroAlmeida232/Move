@@ -1,0 +1,32 @@
+# sistema
+.DS_Store
+Thumbs.db
+
+# editores
+.idea/
+.vscode/
+*.iml
+
+# segredos: nunca versionar
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.pem
+GoogleService-Info.plist
+google-services.json
+application-local.yml
+
+# node / mobile
+node_modules/
+.expo/
+dist/
+web-build/
+ios/
+android/
+
+# java / backend
+target/
+*.class
+*.log
