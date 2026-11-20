@@ -11,7 +11,7 @@ import {
   type TextInputProps,
 } from 'react-native';
 
-import { fonts, useTheme } from '../../lib/theme';
+import { fonts, useTheme } from './theme';
 
 export function AuthScreen({
   title,

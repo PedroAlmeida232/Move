@@ -13,7 +13,7 @@ import {
   Field,
   PrimaryButton,
   TextLink,
-} from '../../src/features/auth/ui';
+} from '../../src/lib/ui';
 import { useAuth } from '../../src/lib/auth';
 
 export default function Entrar() {

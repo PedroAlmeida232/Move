@@ -50,6 +50,8 @@ describe('postWorkout', () => {
   it('falha quando a API recusa o treino', async () => {
     mockFetch.mockResolvedValue(resposta(400));
 
-    await expect(postWorkout(workout)).rejects.toThrow('Falha ao salvar o treino (400)');
+    await expect(postWorkout(workout)).rejects.toThrow(
+      'Falha ao salvar o treino (400)',
+    );
   });
 });
