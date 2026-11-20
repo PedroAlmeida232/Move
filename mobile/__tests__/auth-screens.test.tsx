@@ -1,4 +1,4 @@
-import { Linking } from 'react-native';
+import { Linking, TextInput } from 'react-native';
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -13,6 +13,7 @@ import AuthLayout from '../app/(auth)/_layout';
 import CriarConta from '../app/(auth)/criar-conta';
 import Entrar from '../app/(auth)/entrar';
 import RecuperarSenha from '../app/(auth)/recuperar-senha';
+import NotFound from '../app/+not-found';
 import RootLayout from '../app/_layout';
 import Home from '../app/index';
 import { POLICY_URL } from '../src/lib/links';
@@ -28,6 +29,7 @@ jest.mock('@react-native-firebase/auth', () => ({
 
 const rotas = {
   _layout: RootLayout,
+  '+not-found': NotFound,
   index: Home,
   '(auth)/_layout': AuthLayout,
   '(auth)/entrar': Entrar,
@@ -43,7 +45,11 @@ async function abrir(url: string, sessao: { uid: string } | null = null) {
   return app;
 }
 
-async function digitar(user: ReturnType<typeof userEvent.setup>, campo: string, texto: string) {
+async function digitar(
+  user: ReturnType<typeof userEvent.setup>,
+  campo: string,
+  texto: string,
+) {
   await user.type(screen.getByLabelText(campo), texto);
 }
 
@@ -76,7 +82,9 @@ describe('guarda de rotas', () => {
     await renderRouter(rotas, { initialUrl: '/' });
 
     expect(screen.queryByText('Move')).not.toBeOnTheScreen();
-    expect(screen.queryByRole('button', { name: 'Entrar' })).not.toBeOnTheScreen();
+    expect(
+      screen.queryByRole('button', { name: 'Entrar' }),
+    ).not.toBeOnTheScreen();
   });
 });
 
@@ -118,7 +126,9 @@ describe('entrar', () => {
     await digitar(user, 'Senha', 'segredo1');
     await user.press(screen.getByRole('button', { name: 'Entrar' }));
 
-    expect(await screen.findByText('E-mail ou senha incorretos.')).toBeOnTheScreen();
+    expect(
+      await screen.findByText('E-mail ou senha incorretos.'),
+    ).toBeOnTheScreen();
   });
 
   it('sucesso leva para a tela inicial', async () => {
@@ -132,7 +142,11 @@ describe('entrar', () => {
     await digitar(user, 'Senha', 'segredo1');
     await user.press(screen.getByRole('button', { name: 'Entrar' }));
 
-    expect(signInWithEmailAndPassword).toHaveBeenCalledWith({}, 'pedro@move.app', 'segredo1');
+    expect(signInWithEmailAndPassword).toHaveBeenCalledWith(
+      {},
+      'pedro@move.app',
+      'segredo1',
+    );
     expect(await screen.findByText('Move')).toBeOnTheScreen();
     expect(app.getPathname()).toBe('/');
   });
@@ -164,25 +178,33 @@ describe('criar conta', () => {
     await user.press(screen.getByRole('button', { name: 'Criar conta' }));
 
     expect(
-      screen.getByText('Para criar a conta, aceite o uso dos seus dados de saúde.'),
+      screen.getByText(
+        'Para criar a conta, aceite o uso dos seus dados de saúde.',
+      ),
     ).toBeOnTheScreen();
     expect(createUserWithEmailAndPassword).not.toHaveBeenCalled();
   });
 
   it('mostra o link da política de privacidade', async () => {
-    const abrirUrl = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+    const abrirUrl = jest
+      .spyOn(Linking, 'openURL')
+      .mockResolvedValue(undefined as never);
     const user = userEvent.setup();
     await abrir('/criar-conta');
 
-    await user.press(screen.getByRole('link', { name: 'Política de privacidade' }));
+    await user.press(
+      screen.getByRole('link', { name: 'Política de privacidade' }),
+    );
 
     expect(abrirUrl).toHaveBeenCalledWith(POLICY_URL);
   });
 
   it('com consentimento, cria a conta e leva para a tela inicial', async () => {
-    (createUserWithEmailAndPassword as jest.Mock).mockImplementation(async () => {
-      emitir({ uid: 'u2' });
-    });
+    (createUserWithEmailAndPassword as jest.Mock).mockImplementation(
+      async () => {
+        emitir({ uid: 'u2' });
+      },
+    );
     const user = userEvent.setup();
     await abrir('/criar-conta');
 
@@ -208,7 +230,9 @@ describe('criar conta', () => {
     await user.press(screen.getByRole('button', { name: 'Criar conta' }));
 
     expect(screen.getByText('Informe um e-mail válido.')).toBeOnTheScreen();
-    expect(screen.getByText('A senha deve ter pelo menos 6 caracteres.')).toBeOnTheScreen();
+    expect(
+      screen.getByText('A senha deve ter pelo menos 6 caracteres.'),
+    ).toBeOnTheScreen();
     expect(createUserWithEmailAndPassword).not.toHaveBeenCalled();
   });
 
@@ -223,7 +247,9 @@ describe('criar conta', () => {
     await user.press(screen.getByRole('checkbox'));
     await user.press(screen.getByRole('button', { name: 'Criar conta' }));
 
-    expect(await screen.findByText('Já existe uma conta com esse e-mail.')).toBeOnTheScreen();
+    expect(
+      await screen.findByText('Já existe uma conta com esse e-mail.'),
+    ).toBeOnTheScreen();
   });
 });
 
@@ -240,7 +266,9 @@ describe('recuperar senha', () => {
   });
 
   it('envia o link e confirma sem revelar se o e-mail tem conta', async () => {
-    (sendPasswordResetEmail as jest.Mock).mockRejectedValue({ code: 'auth/user-not-found' });
+    (sendPasswordResetEmail as jest.Mock).mockRejectedValue({
+      code: 'auth/user-not-found',
+    });
     const user = userEvent.setup();
     await abrir('/recuperar-senha');
 
@@ -266,7 +294,60 @@ describe('recuperar senha', () => {
     await user.press(screen.getByRole('button', { name: 'Enviar link' }));
 
     expect(
-      await screen.findByText('Sem conexão com a internet. Verifique e tente de novo.'),
+      await screen.findByText(
+        'Sem conexão com a internet. Verifique e tente de novo.',
+      ),
     ).toBeOnTheScreen();
+  });
+});
+
+describe('acessibilidade: foco no campo com erro', () => {
+  function focados(spy: jest.SpyInstance) {
+    return spy.mock.contexts.map(
+      (campo: { props: { accessibilityLabel: string } }) =>
+        campo.props.accessibilityLabel,
+    );
+  }
+
+  it.each([['/entrar'], ['/criar-conta']])(
+    'em %s, vai para o e-mail e depois para a senha inválidos',
+    async (rota) => {
+      const foco = jest.spyOn(TextInput.prototype, 'focus');
+      const user = userEvent.setup();
+      await abrir(rota);
+
+      await digitar(user, 'Senha', 'segredo1');
+      await user.press(
+        screen.getByRole('button', { name: /^(Entrar|Criar conta)$/ }),
+      );
+      expect(focados(foco)).toEqual(['E-mail']);
+
+      await digitar(user, 'E-mail', 'pedro@move.app');
+      await user.clear(screen.getByLabelText('Senha'));
+      await digitar(user, 'Senha', '123');
+      await user.press(
+        screen.getByRole('button', { name: /^(Entrar|Criar conta)$/ }),
+      );
+      expect(focados(foco)).toEqual(['E-mail', 'Senha']);
+    },
+  );
+
+  it('em recuperar senha, vai para o e-mail inválido', async () => {
+    const foco = jest.spyOn(TextInput.prototype, 'focus');
+    const user = userEvent.setup();
+    await abrir('/recuperar-senha');
+
+    await user.press(screen.getByRole('button', { name: 'Enviar link' }));
+
+    expect(focados(foco)).toEqual(['E-mail']);
+  });
+
+  it('os erros são anunciados como alerta', async () => {
+    const user = userEvent.setup();
+    await abrir('/entrar');
+
+    await user.press(screen.getByRole('button', { name: 'Entrar' }));
+
+    expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
   });
 });
