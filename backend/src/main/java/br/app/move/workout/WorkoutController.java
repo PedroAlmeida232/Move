@@ -35,23 +35,19 @@ public class WorkoutController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Response create(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Request request) {
-        return workoutService.create(userId(jwt), request);
+        return workoutService.create(userService.fromToken(jwt).getId(), request);
     }
 
     @GetMapping
     public List<Response> list(@AuthenticationPrincipal Jwt jwt,
             @RequestParam Instant from, @RequestParam Instant to) {
-        return workoutService.list(userId(jwt), from, to);
+        return workoutService.list(userService.fromToken(jwt).getId(), from, to);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
-        workoutService.delete(userId(jwt), id);
+        workoutService.delete(userService.fromToken(jwt).getId(), id);
     }
 
-    /** O dono vem sempre do token. */
-    private UUID userId(Jwt jwt) {
-        return userService.findOrCreate(jwt.getSubject(), jwt.getClaimAsString("email")).getId();
-    }
 }
