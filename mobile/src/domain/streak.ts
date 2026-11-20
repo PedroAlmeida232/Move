@@ -23,7 +23,11 @@ export function addDays(day: string, amount: number): string {
  * Hoje sem treino não quebra; dia de treino passado sem treino quebra;
  * `restWeekdays` (0 = domingo) são dias de descanso: não quebram e não somam.
  */
-export function streak(days: string[], today: string, restWeekdays: number[] = []): number {
+export function streak(
+  days: string[],
+  today: string,
+  restWeekdays: number[] = [],
+): number {
   const trained = new Set(days.filter((d) => d <= today));
   if (trained.size === 0) return 0;
   const earliest = [...trained].sort()[0];

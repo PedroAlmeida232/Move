@@ -1,4 +1,11 @@
-export const XP = { set: 10, workout: 50, meal: 5, mealCap: 5, prot: 30, weight: 15 } as const;
+export const XP = {
+  set: 10,
+  workout: 50,
+  meal: 5,
+  mealCap: 5,
+  prot: 30,
+  weight: 15,
+} as const;
 
 export type WorkoutSession = { completedSets: number; finished: boolean };
 export type Meal = { date: string; protein: number };

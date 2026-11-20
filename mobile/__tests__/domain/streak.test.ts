@@ -9,8 +9,12 @@ describe('dayKey', () => {
   });
 
   it('vira o dia à meia-noite local', () => {
-    expect(dayKey(new Date('2026-11-21T02:59:59Z'), 'America/Sao_Paulo')).toBe('2026-11-20');
-    expect(dayKey(new Date('2026-11-21T03:00:00Z'), 'America/Sao_Paulo')).toBe('2026-11-21');
+    expect(dayKey(new Date('2026-11-21T02:59:59Z'), 'America/Sao_Paulo')).toBe(
+      '2026-11-20',
+    );
+    expect(dayKey(new Date('2026-11-21T03:00:00Z'), 'America/Sao_Paulo')).toBe(
+      '2026-11-21',
+    );
   });
 });
 
@@ -49,7 +53,13 @@ describe('streak', () => {
   });
 
   it('ignora datas repetidas e datas futuras', () => {
-    const days = ['2026-11-19', '2026-11-19', '2026-11-20', '2026-11-21', '2026-11-25'];
+    const days = [
+      '2026-11-19',
+      '2026-11-19',
+      '2026-11-20',
+      '2026-11-21',
+      '2026-11-25',
+    ];
     expect(streak(days, hoje)).toBe(2);
   });
 
@@ -59,7 +69,9 @@ describe('streak', () => {
 
   it('dias de descanso não quebram nem somam', () => {
     // 20/11 sex, 19 qui, 18 qua (descanso), 17 ter. Descanso: quarta (3).
-    expect(streak(['2026-11-17', '2026-11-19', '2026-11-20'], hoje, [3])).toBe(3);
+    expect(streak(['2026-11-17', '2026-11-19', '2026-11-20'], hoje, [3])).toBe(
+      3,
+    );
   });
 
   it('hoje sendo descanso e sem treino segue de ontem', () => {
@@ -67,12 +79,17 @@ describe('streak', () => {
   });
 
   it('atravessa mês e ano', () => {
-    expect(streak(['2025-12-31', '2026-01-01', '2026-01-02'], '2026-01-02')).toBe(3);
+    expect(
+      streak(['2025-12-31', '2026-01-01', '2026-01-02'], '2026-01-02'),
+    ).toBe(3);
   });
 
   it('usa o dia local: treino às 23h30 em São Paulo conta no dia certo', () => {
     const noite = dayKey(new Date('2026-11-21T02:30:00Z'), 'America/Sao_Paulo'); // 2026-11-20
-    const hojeLocal = dayKey(new Date('2026-11-21T10:00:00Z'), 'America/Sao_Paulo'); // 2026-11-21
+    const hojeLocal = dayKey(
+      new Date('2026-11-21T10:00:00Z'),
+      'America/Sao_Paulo',
+    ); // 2026-11-21
     expect(streak([noite], hojeLocal)).toBe(1);
     // dois dias depois sem treino, a sequência acabou.
     expect(streak([noite], addDays(hojeLocal, 2))).toBe(0);

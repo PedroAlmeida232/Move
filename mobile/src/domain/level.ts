@@ -27,6 +27,8 @@ export function levelFor(xp: number): LevelInfo {
     name: current.name,
     next,
     xpToNext: next ? next.at - total : 0,
-    pct: next ? Math.round(((total - current.at) / (next.at - current.at)) * 100) : 100,
+    pct: next
+      ? Math.round(((total - current.at) / (next.at - current.at)) * 100)
+      : 100,
   };
 }

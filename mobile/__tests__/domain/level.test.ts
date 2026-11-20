@@ -23,7 +23,12 @@ describe('levelFor', () => {
 
   it('499 XP ainda é Iniciante e 500 XP já é Ativo (limite inclusivo)', () => {
     expect(levelFor(499)).toMatchObject({ index: 0, xpToNext: 1, pct: 100 });
-    expect(levelFor(500)).toMatchObject({ index: 1, name: 'Ativo', xpToNext: 1500, pct: 0 });
+    expect(levelFor(500)).toMatchObject({
+      index: 1,
+      name: 'Ativo',
+      xpToNext: 1500,
+      pct: 0,
+    });
   });
 
   it('calcula a porcentagem dentro do nível, arredondada', () => {

@@ -10,7 +10,14 @@ describe('xpFor', () => {
   });
 
   it('usa os valores do protótipo', () => {
-    expect(XP).toEqual({ set: 10, workout: 50, meal: 5, mealCap: 5, prot: 30, weight: 15 });
+    expect(XP).toEqual({
+      set: 10,
+      workout: 50,
+      meal: 5,
+      mealCap: 5,
+      prot: 30,
+      weight: 15,
+    });
   });
 
   it('soma 10 por série concluída e 50 por treino concluído', () => {
@@ -26,12 +33,17 @@ describe('xpFor', () => {
   });
 
   it('limita as refeições a 5 por dia, mas cada dia tem o seu limite', () => {
-    const meals = [...refeicoes(7, '2026-11-19'), ...refeicoes(2, '2026-11-20')];
+    const meals = [
+      ...refeicoes(7, '2026-11-19'),
+      ...refeicoes(2, '2026-11-20'),
+    ];
     expect(xpFor([], meals, [])).toBe(5 * 5 + 2 * 5);
   });
 
   it('soma 15 por peso registrado', () => {
-    expect(xpFor([], [], [{ date: '2026-11-20' }, { date: '2026-11-13' }])).toBe(30);
+    expect(
+      xpFor([], [], [{ date: '2026-11-20' }, { date: '2026-11-13' }]),
+    ).toBe(30);
   });
 
   it('dá 30 de bônus uma vez por dia em que a proteína bate a meta (limite inclusivo)', () => {
