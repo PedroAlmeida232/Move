@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: move-backend
+
+server:
+  port: ${PORT:8080}
