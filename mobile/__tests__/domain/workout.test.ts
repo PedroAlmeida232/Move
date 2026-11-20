@@ -37,7 +37,12 @@ describe('workoutProgress', () => {
   });
 
   it('sem exercícios, não há progresso nem treino completo', () => {
-    expect(workoutProgress([])).toEqual({ done: 0, total: 0, pct: 0, complete: false });
+    expect(workoutProgress([])).toEqual({
+      done: 0,
+      total: 0,
+      pct: 0,
+      complete: false,
+    });
   });
 
   it('conta séries feitas, porcentagem arredondada e se está completo', () => {
@@ -82,5 +87,13 @@ describe('setsToPayload', () => {
     ]);
 
     expect(set).toMatchObject({ kg: null, reps: null });
+  });
+
+  it('repetições são números inteiros', () => {
+    const [set] = setsToPayload([
+      { exerciseId: 'a', sets: [{ kg: '10', reps: '8,7', done: true }] },
+    ]);
+
+    expect(set.reps).toBe(8);
   });
 });
