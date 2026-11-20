@@ -34,10 +34,40 @@ Desenvolvimento orientado a testes (TDD): primeiro o teste que falha, depois o m
 ## Estrutura
 
 ```
-backend/     API Java (a criar na Sprint 0)
-mobile/      app React Native (a criar na Sprint 0)
+backend/     API Java 21 + Spring Boot 3 (Maven)
+mobile/      app React Native + Expo (TypeScript)
+docs/        política de privacidade e filas de tarefas dos agentes
 prototype/   protótipo web com as telas e regras de referência
 design/      marca: logo e ícone
+```
+
+## Como rodar
+
+### Backend (`backend/`)
+
+Requisitos: Java 21 e Docker rodando (os testes usam Testcontainers com Postgres; não dependem do Supabase).
+
+```bash
+cd backend
+./mvnw verify                      # compila e roda todos os testes
+cp .env.example .env               # preencha os valores (o .env nunca vai para o Git)
+set -a; source .env; set +a
+./mvnw spring-boot:run             # sobe a API em http://localhost:8080
+```
+
+Variáveis de ambiente: `DATABASE_URL`, `DATABASE_USER`, `DATABASE_PASSWORD` e `FIREBASE_PROJECT_ID`. A senha do banco fica só no `.env` local e na Railway.
+
+### Mobile (`mobile/`)
+
+Requisitos: Node.js e o app Expo Go ou um emulador.
+
+```bash
+cd mobile
+npm install
+npm start                          # abre o Expo
+npm test                           # testes (Jest)
+npx tsc --noEmit                   # checagem de tipos
+npm run lint
 ```
 
 O protótipo em `prototype/index.html` abre direto no navegador. Ele é a referência das regras de XP, metas e telas, mas não faz parte do produto.
