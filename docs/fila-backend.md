@@ -2,10 +2,10 @@
 
 Legenda: `[ ]` pendente · `[x]` feito (PR mergeado na dev). Faça sempre a primeira `[ ]` cujas dependências estejam feitas. Regras completas em `CLAUDE.md`.
 
-- [ ] **B01** · [INFRA] Estrutura do repositório (só README, template de PR e docs; não criar `mobile/`) · `feature/repo-structure` · https://trello.com/c/XlsqmAQf · depende: —
+- [x] **B01** · [INFRA] Estrutura do repositório (só README, template de PR e docs; não criar `mobile/`) · `feature/repo-structure` · https://trello.com/c/XlsqmAQf · depende: —
 - [ ] **B02** · [BE] Esqueleto Spring Boot com endpoint de saúde · `feature/backend-skeleton` · https://trello.com/c/yyoJAmug · depende: —
 - [ ] **B03** · [BE] Banco: Flyway, Testcontainers e Supabase · `feature/db-setup` · https://trello.com/c/9LAGZsws · depende: B02, Docker rodando
-- [ ] **B04** · [BE] Validar o token do Firebase · `feature/backend-firebase-auth` · https://trello.com/c/0BIZ0lHZ · depende: B02
+- [x] **B04** · [BE] Validar o token do Firebase · `feature/backend-firebase-auth` · https://trello.com/c/0BIZ0lHZ · depende: B02
 - [ ] **B05** · [BE] Usuário: criar no primeiro login e `GET /me` · `feature/backend-user-me` · https://trello.com/c/preJbJX3 · depende: B03, B04
 - [ ] **B06** · [INFRA] CI no GitHub Actions · `feature/ci` · https://trello.com/c/4qQGCHoe · depende: B02 e M01 (esqueleto mobile mergeado)
 - [ ] **B07** · [DB][BE] Perfil e plano de treino · `feature/plan` · https://trello.com/c/M6pUPjKh · depende: B05
