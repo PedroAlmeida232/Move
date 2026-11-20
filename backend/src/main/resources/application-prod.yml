@@ -1,0 +1,5 @@
+# Perfil prod (Railway): mesma conexão, via variáveis de ambiente, com logs enxutos.
+logging:
+  level:
+    root: WARN
+    br.app.move: INFO
