@@ -14,6 +14,7 @@ export const themes = {
     tint: 'rgba(37,99,235,.11)',
     r2: '#38BDF8',
     r3: '#1E3A8A',
+    danger: '#C62828',
   },
   dark: {
     bg: '#000000',
@@ -27,6 +28,7 @@ export const themes = {
     tint: 'rgba(76,141,255,.2)',
     r2: '#5AC8FA',
     r3: '#8E9BFF',
+    danger: '#FF6B6B',
   },
 };
 
