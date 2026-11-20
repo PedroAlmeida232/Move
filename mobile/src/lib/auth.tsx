@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   type User,
@@ -21,6 +22,7 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -49,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await createUserWithEmailAndPassword(getAuth(), email, password);
       },
       signOut: () => firebaseSignOut(getAuth()),
+      resetPassword: (email) => sendPasswordResetEmail(getAuth(), email),
     }),
     [user, loading],
   );
