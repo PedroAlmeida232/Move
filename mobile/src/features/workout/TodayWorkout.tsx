@@ -10,11 +10,18 @@ import {
 import { fonts, useTheme } from '../../lib/theme';
 import { ErrorText, PrimaryButton } from '../../lib/ui';
 
-import { postWorkout, type PlanDay } from './api';
+import { postWorkout, type PlanDay, type WorkoutInput } from './api';
 
 type Save = 'idle' | 'saving' | 'error' | 'saved';
 
-export function TodayWorkout({ day }: { day: PlanDay }) {
+export function TodayWorkout({
+  day,
+  onFinished,
+}: {
+  day: PlanDay;
+  /** Chamado depois que o treino foi salvo na API. */
+  onFinished?: (workout: WorkoutInput) => void;
+}) {
   const theme = useTheme();
   const [exercises, setExercises] = useState<ExerciseSets[]>(() =>
     day.exercises.map((e) => ({ exerciseId: e.id, sets: initialSets(e.sets) })),
@@ -43,16 +50,19 @@ export function TodayWorkout({ day }: { day: PlanDay }) {
 
   async function finish() {
     setSave('saving');
+    const workout: WorkoutInput = {
+      performedAt: new Date().toISOString(),
+      finished: true,
+      sets: setsToPayload(exercises),
+    };
     try {
-      await postWorkout({
-        performedAt: new Date().toISOString(),
-        finished: true,
-        sets: setsToPayload(exercises),
-      });
-      setSave('saved');
+      await postWorkout(workout);
     } catch {
       setSave('error');
+      return;
     }
+    setSave('saved');
+    onFinished?.(workout);
   }
 
   return (

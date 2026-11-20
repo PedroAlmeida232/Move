@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useState } from 'react';
 
 export type ResourceState<T> =
   { status: 'loading' } | { status: 'error' } | { status: 'ready'; data: T };
@@ -21,18 +21,24 @@ export function useResource<T>(load: () => Promise<T>) {
   }, [attempt]);
 
   // O estado já começa como "carregando"; só a nova tentativa precisa voltar a ele.
-  const retry = () => {
+  const retry = useCallback(() => {
     setState({ status: 'loading' });
     setAttempt((n) => n + 1);
-  };
+  }, []);
+
+  /** Busca de novo mantendo o que está na tela até a resposta chegar. */
+  const refresh = useCallback(() => setAttempt((n) => n + 1), []);
 
   /** Atualiza o dado já carregado (ex.: depois de salvar algo novo). */
-  const update = (change: (data: T) => T) =>
-    setState((current) =>
-      current.status === 'ready'
-        ? { status: 'ready', data: change(current.data) }
-        : current,
-    );
+  const update = useCallback(
+    (change: (data: T) => T) =>
+      setState((current) =>
+        current.status === 'ready'
+          ? { status: 'ready', data: change(current.data) }
+          : current,
+      ),
+    [],
+  );
 
-  return { state, retry, update };
+  return { state, retry, refresh, update };
 }
