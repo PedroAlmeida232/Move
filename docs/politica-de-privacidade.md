@@ -6,8 +6,8 @@ Esta política explica como o aplicativo **Move** ("Move", "nós") coleta, usa, 
 
 ## 1. Quem somos
 
-- **Controlador dos dados:** [NOME COMPLETO DO RESPONSÁVEL], desenvolvedor do Move.
-- **Contato para assuntos de privacidade (encarregado):** [E-MAIL DE CONTATO]
+- **Controlador dos dados:** Pedro Rodrigues Almeida, desenvolvedor do Move.
+- **Contato para assuntos de privacidade (encarregado):** pedrominato23@gmail.com
 
 ## 2. Quais dados coletamos
 
@@ -49,7 +49,7 @@ Usamos prestadores de serviço (operadores) que tratam dados em nosso nome, some
 | --- | --- | --- |
 | **Google Firebase Authentication** | Login e autenticação | E-mail, identificador da conta, senha (protegida) |
 | **Supabase** | Banco de dados | Todos os dados da seção 2 |
-| **[HOSPEDAGEM DA API: Render, Railway ou Fly.io]** | Servidor da API | Dados em trânsito e registros técnicos |
+| **Railway** | Servidor da API | Dados em trânsito e registros técnicos |
 | **Apple e Google** (quando você escolhe entrar com a conta deles) | Login social | Identificador e e-mail |
 
 Também podemos divulgar dados se a lei ou uma ordem judicial exigir.
@@ -79,7 +79,7 @@ Pela LGPD (art. 18), você pode, a qualquer momento e gratuitamente:
 
 **Como exercer:**
 - **Excluir a conta e todos os dados:** no app, em *Ajustes → Excluir conta*. A exclusão é definitiva.
-- **Demais pedidos:** escreva para [E-MAIL DE CONTATO]. Respondemos em até 15 dias.
+- **Demais pedidos:** escreva para pedrominato23@gmail.com. Respondemos em até 15 dias.
 
 ## 9. Como protegemos seus dados
 
@@ -93,7 +93,7 @@ Nenhum sistema é totalmente seguro. Se ocorrer um incidente que possa causar ri
 
 ## 10. Crianças e adolescentes
 
-O Move não é destinado a menores de **13 anos**, e não coletamos conscientemente dados de crianças. Menores de 18 anos devem usar o app com o consentimento e a supervisão de um responsável legal. Se soubermos que coletamos dados de uma criança sem esse consentimento, apagaremos a conta. Se você acredita que isso aconteceu, escreva para [E-MAIL DE CONTATO].
+O Move não é destinado a menores de **13 anos**, e não coletamos conscientemente dados de crianças. Menores de 18 anos devem usar o app com o consentimento e a supervisão de um responsável legal. Se soubermos que coletamos dados de uma criança sem esse consentimento, apagaremos a conta. Se você acredita que isso aconteceu, escreva para pedrominato23@gmail.com.
 
 ## 11. Aviso importante sobre saúde
 
@@ -109,13 +109,13 @@ Podemos atualizar esta política. Em caso de mudança relevante, avisaremos no a
 
 ## 14. Contato
 
-Dúvidas, pedidos ou reclamações sobre privacidade: **[E-MAIL DE CONTATO]**.
+Dúvidas, pedidos ou reclamações sobre privacidade: **pedrominato23@gmail.com**.
 
 ---
 
 ## Notas internas (apagar antes de publicar)
 
-- Substituir todos os campos entre colchetes: data, nome, e-mail, hospedagem da API e região do Supabase.
+- Substituir os campos que restam entre colchetes: data de publicação e região do Supabase.
 - Publicar em uma URL pública (por exemplo, GitHub Pages) e informá-la no App Store Connect e dentro do app (tela de cadastro e Ajustes).
 - No cadastro, incluir caixa de consentimento (não pré-marcada) para o tratamento de dados de saúde, com link para esta política.
 - Refazer esta revisão se entrar qualquer SDK novo (análise, anúncios, notificações push, Apple Saúde), pois muda a lista de dados e prestadores.
