@@ -1,9 +1,12 @@
-import { Linking, TextInput } from 'react-native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { Linking, Platform, TextInput } from 'react-native';
 import {
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  signInWithCredential,
   signInWithEmailAndPassword,
 } from '@react-native-firebase/auth';
 import { act, renderRouter, screen } from 'expo-router/testing-library';
@@ -37,6 +40,27 @@ jest.mock('@react-native-firebase/auth', () => ({
   createUserWithEmailAndPassword: jest.fn(),
   sendPasswordResetEmail: jest.fn(),
   signOut: jest.fn(),
+  signInWithCredential: jest.fn(),
+  GoogleAuthProvider: { credential: jest.fn() },
+  OAuthProvider: jest.fn(() => ({ credential: jest.fn() })),
+}));
+
+jest.mock('expo-apple-authentication', () => ({
+  signInAsync: jest.fn(),
+  AppleAuthenticationScope: { FULL_NAME: 0, EMAIL: 1 },
+}));
+jest.mock('expo-crypto', () => ({
+  randomUUID: () => 'nonce',
+  digestStringAsync: async () => 'hash',
+  CryptoDigestAlgorithm: { SHA256: 'SHA-256' },
+}));
+jest.mock('@react-native-google-signin/google-signin', () => ({
+  GoogleSignin: {
+    configure: jest.fn(),
+    hasPlayServices: jest.fn(),
+    signIn: jest.fn(),
+  },
+  statusCodes: { SIGN_IN_CANCELLED: 'SIGN_IN_CANCELLED' },
 }));
 
 const rotas = {
@@ -375,5 +399,126 @@ describe('acessibilidade: foco no campo com erro', () => {
     await user.press(screen.getByRole('button', { name: 'Entrar' }));
 
     expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
+  });
+});
+
+describe('entrar com Apple e Google', () => {
+  const apple = AppleAuthentication.signInAsync as jest.Mock;
+  const google = GoogleSignin.signIn as jest.Mock;
+  const credencial = signInWithCredential as jest.Mock;
+
+  beforeEach(() => {
+    const { OAuthProvider } = jest.requireMock('@react-native-firebase/auth');
+    OAuthProvider.mockImplementation(() => ({ credential: jest.fn() }));
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('no iOS mostra Apple e Google, e entrar com Apple leva para a tela inicial', async () => {
+    apple.mockResolvedValue({ identityToken: 'tok' });
+    credencial.mockImplementation(async () => emitir({ uid: 'u3' }));
+    const user = userEvent.setup();
+    const app = await abrir('/entrar');
+
+    expect(
+      screen.getByRole('button', { name: 'Continuar com Google' }),
+    ).toBeOnTheScreen();
+    await user.press(
+      screen.getByRole('button', { name: 'Continuar com Apple' }),
+    );
+
+    expect(
+      await screen.findByRole('header', { name: 'Hoje' }),
+    ).toBeOnTheScreen();
+    expect(app.getPathname()).toBe('/');
+  });
+
+  it('no Android só mostra o Google', async () => {
+    jest.replaceProperty(Platform, 'OS', 'android');
+    await abrir('/entrar');
+
+    expect(
+      screen.getByRole('button', { name: 'Continuar com Google' }),
+    ).toBeOnTheScreen();
+    expect(
+      screen.queryByRole('button', { name: 'Continuar com Apple' }),
+    ).not.toBeOnTheScreen();
+  });
+
+  it('cancelar não mostra erro', async () => {
+    apple.mockRejectedValue({ code: 'ERR_REQUEST_CANCELED' });
+    google.mockResolvedValue({ type: 'cancelled', data: null });
+    const user = userEvent.setup();
+    await abrir('/entrar');
+
+    await user.press(
+      screen.getByRole('button', { name: 'Continuar com Apple' }),
+    );
+    await user.press(
+      screen.getByRole('button', { name: 'Continuar com Google' }),
+    );
+
+    expect(screen.queryByRole('alert')).not.toBeOnTheScreen();
+    expect(credencial).not.toHaveBeenCalled();
+  });
+
+  it('erro vira mensagem em português', async () => {
+    google.mockResolvedValue({ type: 'success', data: { idToken: 'tok' } });
+    credencial.mockRejectedValue({
+      code: 'auth/account-exists-with-different-credential',
+    });
+    const user = userEvent.setup();
+    await abrir('/entrar');
+
+    await user.press(
+      screen.getByRole('button', { name: 'Continuar com Google' }),
+    );
+
+    expect(
+      await screen.findByText(
+        'Este e-mail já usa outra forma de entrar. Entre como da primeira vez.',
+      ),
+    ).toBeOnTheScreen();
+  });
+
+  it('em entrar, avisa que continuar com Apple ou Google aceita o uso dos dados de saúde', async () => {
+    await abrir('/entrar');
+
+    expect(
+      screen.getByText(
+        /Ao continuar com Apple ou Google, você autoriza o Move a tratar/,
+      ),
+    ).toBeOnTheScreen();
+    expect(
+      screen.getByRole('link', { name: 'Política de privacidade' }),
+    ).toBeOnTheScreen();
+  });
+
+  it('em criar conta, exige o consentimento antes de abrir a Apple ou o Google', async () => {
+    google.mockResolvedValue({ type: 'cancelled', data: null });
+    const user = userEvent.setup();
+    await abrir('/criar-conta');
+
+    await user.press(
+      screen.getByRole('button', { name: 'Continuar com Google' }),
+    );
+    await user.press(
+      screen.getByRole('button', { name: 'Continuar com Apple' }),
+    );
+
+    expect(
+      screen.getByText(
+        'Para criar a conta, aceite o uso dos seus dados de saúde.',
+      ),
+    ).toBeOnTheScreen();
+    expect(google).not.toHaveBeenCalled();
+    expect(apple).not.toHaveBeenCalled();
+
+    await user.press(screen.getByRole('checkbox'));
+    await user.press(
+      screen.getByRole('button', { name: 'Continuar com Google' }),
+    );
+
+    expect(google).toHaveBeenCalled();
   });
 });

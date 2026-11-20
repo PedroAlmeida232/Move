@@ -10,6 +10,8 @@ const MESSAGES: Record<string, string> = {
   'auth/email-already-in-use': 'Já existe uma conta com esse e-mail.',
   'auth/weak-password': 'A senha deve ter pelo menos 6 caracteres.',
   'auth/user-disabled': 'Esta conta foi desativada.',
+  'auth/account-exists-with-different-credential':
+    'Este e-mail já usa outra forma de entrar. Entre como da primeira vez.',
   'auth/too-many-requests':
     'Muitas tentativas. Aguarde um pouco e tente de novo.',
   'auth/network-request-failed':
