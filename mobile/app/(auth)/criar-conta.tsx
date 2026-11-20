@@ -21,9 +21,13 @@ import {
   PrimaryButton,
   TextLink,
 } from '../../src/lib/ui';
+import { SocialButtons } from '../../src/features/auth/SocialButtons';
 import { useAuth } from '../../src/lib/auth';
 import { POLICY_URL } from '../../src/lib/links';
 import { fonts, useTheme } from '../../src/lib/theme';
+
+const CONSENT_REQUIRED =
+  'Para criar a conta, aceite o uso dos seus dados de saúde.';
 
 export default function CriarConta() {
   const { signUp } = useAuth();
@@ -46,9 +50,7 @@ export default function CriarConta() {
     const found = {
       email: validateEmail(email) ?? undefined,
       password: validatePassword(password) ?? undefined,
-      consent: consent
-        ? undefined
-        : 'Para criar a conta, aceite o uso dos seus dados de saúde.',
+      consent: consent ? undefined : CONSENT_REQUIRED,
     };
     setErrors(found);
     if (found.email) return emailRef.current?.focus();
@@ -128,6 +130,13 @@ export default function CriarConta() {
 
       {errors.form ? <ErrorText>{errors.form}</ErrorText> : null}
       <PrimaryButton title="Criar conta" onPress={submit} busy={busy} />
+      <SocialButtons
+        beforeStart={() => {
+          if (consent) return true;
+          setErrors({ consent: CONSENT_REQUIRED });
+          return false;
+        }}
+      />
       <TextLink
         title="Já tenho conta"
         onPress={() => router.replace('/entrar')}

@@ -1,6 +1,7 @@
 package br.app.move.user;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,6 +11,11 @@ public class UserService {
 
     public UserService(UserRepository repository) {
         this.repository = repository;
+    }
+
+    /** Usuário dono do token: o uid vem do "sub" e o e-mail do claim "email". Nunca do cliente. */
+    public User fromToken(Jwt jwt) {
+        return findOrCreate(jwt.getSubject(), jwt.getClaimAsString("email"));
     }
 
     /** Sem @Transactional de propósito: se dois primeiros acessos colidirem, busca de novo. */

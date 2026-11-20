@@ -4,7 +4,6 @@ import br.app.move.plan.PlanData.Request;
 import br.app.move.plan.PlanData.Response;
 import br.app.move.user.UserService;
 import jakarta.validation.Valid;
-import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,16 +26,12 @@ public class PlanController {
 
     @GetMapping
     public Response get(@AuthenticationPrincipal Jwt jwt) {
-        return planService.get(userId(jwt));
+        return planService.get(userService.fromToken(jwt).getId());
     }
 
     @PutMapping
     public Response put(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody Request request) {
-        return planService.replace(userId(jwt), request);
+        return planService.replace(userService.fromToken(jwt).getId(), request);
     }
 
-    /** O dono do plano vem sempre do token. */
-    private UUID userId(Jwt jwt) {
-        return userService.findOrCreate(jwt.getSubject(), jwt.getClaimAsString("email")).getId();
-    }
 }

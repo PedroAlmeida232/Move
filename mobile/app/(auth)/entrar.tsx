@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { type TextInputInstance } from 'react-native';
+import { Linking, Text, type TextInputInstance } from 'react-native';
 
 import { authErrorMessage } from '../../src/domain/auth-errors';
 import {
@@ -14,10 +14,14 @@ import {
   PrimaryButton,
   TextLink,
 } from '../../src/lib/ui';
+import { SocialButtons } from '../../src/features/auth/SocialButtons';
 import { useAuth } from '../../src/lib/auth';
+import { POLICY_URL } from '../../src/lib/links';
+import { fonts, useTheme } from '../../src/lib/theme';
 
 export default function Entrar() {
   const { signIn } = useAuth();
+  const theme = useTheme();
   const router = useRouter();
   const emailRef = useRef<TextInputInstance>(null);
   const passwordRef = useRef<TextInputInstance>(null);
@@ -86,6 +90,17 @@ export default function Entrar() {
       <TextLink
         title="Criar conta"
         onPress={() => router.push('/criar-conta')}
+      />
+      <SocialButtons />
+      <Text
+        style={{ color: theme.muted, fontFamily: fonts.native, fontSize: 13 }}
+      >
+        Ao continuar com Apple ou Google, você autoriza o Move a tratar seus
+        dados de saúde (peso, treino e dieta) para oferecer o app.
+      </Text>
+      <TextLink
+        title="Política de privacidade"
+        onPress={() => Linking.openURL(POLICY_URL)}
       />
     </AuthScreen>
   );
