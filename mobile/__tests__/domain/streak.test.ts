@@ -1,4 +1,4 @@
-import { addDays, dayKey, streak } from '../../src/domain/streak';
+import { addDays, bestStreak, dayKey, streak } from '../../src/domain/streak';
 
 describe('dayKey', () => {
   it('converte o instante para o dia do calendário no fuso informado', () => {
@@ -93,5 +93,26 @@ describe('streak', () => {
     expect(streak([noite], hojeLocal)).toBe(1);
     // dois dias depois sem treino, a sequência acabou.
     expect(streak([noite], addDays(hojeLocal, 2))).toBe(0);
+  });
+});
+
+describe('bestStreak', () => {
+  it('vale 0 sem dias de treino', () => {
+    expect(bestStreak([])).toBe(0);
+  });
+
+  it('é a maior sequência do histórico, não a atual', () => {
+    const days = ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-05', '2026-11-06'];
+    expect(bestStreak(days)).toBe(3);
+  });
+
+  it('ignora repetidas e aceita fora de ordem', () => {
+    expect(bestStreak(['2026-11-03', '2026-11-01', '2026-11-02', '2026-11-02'])).toBe(3);
+  });
+
+  it('dias de descanso não quebram nem somam', () => {
+    // 17/11 ter, 18 qua (descanso), 19 qui
+    expect(bestStreak(['2026-11-17', '2026-11-19'], [3])).toBe(2);
+    expect(bestStreak(['2026-11-17', '2026-11-19'])).toBe(1);
   });
 });
