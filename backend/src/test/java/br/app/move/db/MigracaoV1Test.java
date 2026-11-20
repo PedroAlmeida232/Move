@@ -2,40 +2,27 @@ package br.app.move.db;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import br.app.move.PostgresTestConfig;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-@Testcontainers
 @SpringBootTest
+@Import(PostgresTestConfig.class)
 class MigracaoV1Test {
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-
-    @DynamicPropertySource
-    static void datasource(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @Test
-    void aoSubirAAplicacaoAMigracaoV1CriaATabelaUsersComRlsLigado() throws SQLException {
-        try (Connection conn = DriverManager.getConnection(
-                        postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
-                ResultSet rs = conn.createStatement()
-                        .executeQuery("select relrowsecurity from pg_class where relname = 'users'")) {
-            assertThat(rs.next()).as("tabela users existe").isTrue();
-            assertThat(rs.getBoolean(1)).as("RLS ligado em users").isTrue();
-        }
+    void aoSubirAAplicacaoAMigracaoV1CriaATabelaUsersComRlsLigado() {
+        List<Boolean> rls = jdbc.queryForList(
+                "select relrowsecurity from pg_class where relname = 'users'", Boolean.class);
+
+        assertThat(rls).as("tabela users existe").hasSize(1);
+        assertThat(rls.get(0)).as("RLS ligado em users").isTrue();
     }
 }

@@ -1,0 +1,5 @@
+# Perfil dev: API local apontando para o Supabase via variáveis de ambiente.
+logging:
+  level:
+    org.flywaydb: INFO
+    org.hibernate.SQL: DEBUG
