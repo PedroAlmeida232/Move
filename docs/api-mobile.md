@@ -44,6 +44,50 @@ O app (mobile) escreve aqui o que espera de cada endpoint. O agente do backend d
 - `kg` e `reps` podem ser `null` (série sem anotação); nunca negativos (`400` se forem).
 - `reps` inteiro; `kg` com casas decimais.
 
+## Refeições e metas (B09)
+
+`GET /api/v1/meals?date=2026-11-20` → `200`
+
+```json
+{
+  "meals": [
+    { "id": "m1…", "date": "2026-11-20", "name": "Almoço", "kcal": 650, "protein": 42, "carbs": 70, "fat": 18 }
+  ],
+  "goals": { "kcal": 2000, "protein": 140, "carbs": 220, "fat": 60 }
+}
+```
+
+- `date`: dia do calendário do usuário (o app manda o dia local).
+- `meals` na ordem em que foram adicionadas. Dia sem refeições: `"meals": []`.
+- `goals` vem do perfil (B07). Meta `0` = sem meta (o app não mostra a barra cheia).
+
+`POST /api/v1/meals` → `201` com a refeição criada (mesmo formato de um item de `meals`, com `id`)
+
+```json
+{ "date": "2026-11-20", "name": "Almoço", "kcal": 650, "protein": 42, "carbs": 70, "fat": 18 }
+```
+
+- `name` obrigatório; `kcal` > 0; `protein`, `carbs` e `fat` ≥ 0 (o app manda `0` quando o campo fica vazio). Fora disso: `400`.
+- `DELETE /api/v1/meals/{id}` → `204` (o app ainda não usa).
+
+## Peso (B10)
+
+`GET /api/v1/weight?from=2026-08-23&to=2026-11-20` → `200`
+
+```json
+{ "entries": [ { "date": "2026-11-20", "kg": 80.4, "waistCm": null } ] }
+```
+
+`PUT /api/v1/weight/2026-11-20` → `200` com o registro salvo
+
+```json
+{ "kg": 80.4, "waistCm": null }
+```
+
+- Um registro por dia: o segundo PUT do mesmo dia substitui o primeiro.
+- `kg` entre 20 e 400 (senão `400`). `waistCm` opcional (o app ainda não usa).
+- O app pede os últimos 90 dias.
+
 ## Pendências para o backend (não bloqueiam o app)
 
 - `GET /api/v1/workouts?from=&to=`: o app vai precisar para mostrar "treino já concluído hoje" depois de reabrir, e para a sequência e o XP (M07). Formato sugerido: lista de sessões com `id`, `performedAt`, `finished` e `sets`.
