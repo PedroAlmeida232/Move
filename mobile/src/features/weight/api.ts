@@ -3,11 +3,13 @@ import { apiFetch } from '../../lib/api';
 
 export type WeightRecord = WeightEntry & { waistCm: number | null };
 
+/** Registros do período; sem período, todos. */
 export async function getWeights(
-  from: string,
-  to: string,
+  from?: string,
+  to?: string,
 ): Promise<WeightRecord[]> {
-  const resposta = await apiFetch(`/api/v1/weight?from=${from}&to=${to}`);
+  const query = from && to ? `?from=${from}&to=${to}` : '';
+  const resposta = await apiFetch(`/api/v1/weight${query}`);
   if (!resposta.ok)
     throw new Error(`Falha ao carregar o peso (${resposta.status})`);
   const body: { entries: WeightRecord[] } = await resposta.json();

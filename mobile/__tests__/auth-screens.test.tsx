@@ -20,11 +20,13 @@ import Hoje from '../app/(tabs)/index';
 import Dieta from '../app/(tabs)/dieta';
 import Peso from '../app/(tabs)/peso';
 import Plano from '../app/(tabs)/plano';
+import Progresso from '../app/(tabs)/progresso';
 import { getPlan } from '../src/features/workout/api';
 import { POLICY_URL } from '../src/lib/links';
 
 jest.mock('../src/features/workout/api', () => ({
   getPlan: jest.fn().mockResolvedValue({ days: [] }),
+  getWorkouts: jest.fn(),
   postWorkout: jest.fn(),
 }));
 
@@ -45,6 +47,7 @@ const rotas = {
   '(tabs)/plano': Plano,
   '(tabs)/dieta': Dieta,
   '(tabs)/peso': Peso,
+  '(tabs)/progresso': Progresso,
   '(auth)/_layout': AuthLayout,
   '(auth)/entrar': Entrar,
   '(auth)/criar-conta': CriarConta,

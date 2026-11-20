@@ -38,3 +38,13 @@ export async function postWorkout(workout: WorkoutInput): Promise<void> {
   if (!resposta.ok)
     throw new Error(`Falha ao salvar o treino (${resposta.status})`);
 }
+
+export type WorkoutSession = WorkoutInput & { id: string };
+
+export async function getWorkouts(): Promise<WorkoutSession[]> {
+  const resposta = await apiFetch('/api/v1/workouts');
+  if (!resposta.ok)
+    throw new Error(`Falha ao carregar os treinos (${resposta.status})`);
+  const body: { sessions: WorkoutSession[] } = await resposta.json();
+  return body.sessions;
+}

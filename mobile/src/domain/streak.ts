@@ -41,3 +41,26 @@ export function streak(
   }
   return count;
 }
+
+/** Maior sequência do histórico, com as mesmas regras de `streak` para descanso. */
+export function bestStreak(
+  days: string[],
+  restWeekdays: number[] = [],
+): number {
+  const trained = new Set(days);
+  if (trained.size === 0) return 0;
+  const sorted = [...trained].sort();
+  const last = sorted[sorted.length - 1];
+
+  let best = 0;
+  let run = 0;
+  for (let day = sorted[0]; day <= last; day = addDays(day, 1)) {
+    if (trained.has(day)) {
+      run += 1;
+      best = Math.max(best, run);
+    } else if (!restWeekdays.includes(new Date(parse(day)).getUTCDay())) {
+      run = 0;
+    }
+  }
+  return best;
+}

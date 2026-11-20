@@ -51,3 +51,17 @@ export function setsToPayload(exercises: ExerciseSets[]): SetPayload[] {
     })),
   );
 }
+
+/**
+ * Dias da semana sem exercício no plano (0 = domingo). Sem plano, nenhum dia é
+ * descanso: senão a sequência nunca quebraria.
+ */
+export function restWeekdays(
+  days: { weekday: number; exercises: unknown[] }[],
+): number[] {
+  const training = new Set(
+    days.filter((d) => d.exercises.length > 0).map((d) => d.weekday),
+  );
+  if (training.size === 0) return [];
+  return [0, 1, 2, 3, 4, 5, 6].filter((weekday) => !training.has(weekday));
+}

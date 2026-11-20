@@ -88,6 +88,37 @@ O app (mobile) escreve aqui o que espera de cada endpoint. O agente do backend d
 - `kg` entre 20 e 400 (senão `400`). `waistCm` opcional (o app ainda não usa).
 - O app pede os últimos 90 dias.
 
-## Pendências para o backend (não bloqueiam o app)
+## Histórico para XP, nível e sequência (B08, B09, B10)
 
-- `GET /api/v1/workouts?from=&to=`: o app vai precisar para mostrar "treino já concluído hoje" depois de reabrir, e para a sequência e o XP (M07). Formato sugerido: lista de sessões com `id`, `performedAt`, `finished` e `sets`.
+O XP, o nível e a sequência são calculados no app, em funções puras, a partir de **todo** o histórico. Por isso as rotas de lista aceitam `from` e `to` **opcionais** (`YYYY-MM-DD`, inclusivos); sem `from`, desde o início; sem `to`, até hoje.
+
+`GET /api/v1/workouts?from=&to=` → `200`
+
+```json
+{
+  "sessions": [
+    {
+      "id": "w1…",
+      "performedAt": "2026-11-20T21:30:00.000Z",
+      "finished": true,
+      "sets": [{ "exerciseId": "b6f0…", "setNumber": 1, "kg": 12.5, "reps": 10, "done": true }]
+    }
+  ]
+}
+```
+
+`GET /api/v1/meals?from=&to=` → `200`, mesmo formato do `?date=` (`meals` de todos os dias do período e `goals` atuais). `date` e `from`/`to` não vêm juntos.
+
+`GET /api/v1/weight` sem `from`/`to` → todos os registros.
+
+## Conquistas (B11)
+
+`GET /api/v1/achievements` → `200`
+
+```json
+{ "achievements": [{ "code": "first", "unlockedAt": "2026-11-20T21:30:05.000Z" }] }
+```
+
+- Só as desbloqueadas. O catálogo (nome e descrição) fica no app.
+- Códigos do protótipo: `first` (primeiro treino), `streak7` (7 dias seguidos), `ten` (10 treinos), `w25` (25 treinos), `pr` (novo recorde de carga), `w4` (peso 4 semanas seguidas), `prot5` (meta de proteína em 5 dias), `sets100` (100 séries).
+- O app busca de novo ao abrir a aba Progresso; a conquista nova aparece com a data.

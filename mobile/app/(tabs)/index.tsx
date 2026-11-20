@@ -1,6 +1,15 @@
+import * as Haptics from 'expo-haptics';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 
 import { weekdayOf } from '../../src/domain/workout';
+import { LevelUp } from '../../src/features/progress/LevelUp';
+import {
+  progressOf,
+  useProgress,
+  withSession,
+} from '../../src/features/progress/useProgress';
+import type { WorkoutInput } from '../../src/features/workout/api';
 import { TodayWorkout } from '../../src/features/workout/TodayWorkout';
 import { usePlan } from '../../src/features/workout/usePlan';
 import { fonts, useTheme } from '../../src/lib/theme';
@@ -21,7 +30,23 @@ export default function Hoje() {
   const theme = useTheme();
   const plan = usePlan();
   const { state } = plan;
-  const today = weekdayOf(todayKey());
+  const [todayDate] = useState(todayKey);
+  const today = weekdayOf(todayDate);
+  const progress = useProgress();
+  const [newLevel, setNewLevel] = useState<string | null>(null);
+
+  // Compara o nível antes e depois do treino salvo. Sem histórico carregado, não celebra.
+  function onFinished(workout: WorkoutInput) {
+    if (progress.state.status !== 'ready') return;
+    const data = progress.state.data;
+    const before = progressOf(data, todayDate).level;
+    const after = progressOf(withSession(data, workout), todayDate).level;
+    progress.update((current) => withSession(current, workout));
+    if (after.index > before.index) {
+      setNewLevel(after.name);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  }
 
   let content = (
     <LoadStatus
@@ -44,7 +69,9 @@ export default function Hoje() {
         <Empty title="Dia livre" text="Recuperar também faz parte do treino." />
       );
     } else {
-      content = <TodayWorkout key={day.weekday} day={day} />;
+      content = (
+        <TodayWorkout key={day.weekday} day={day} onFinished={onFinished} />
+      );
     }
   }
 
@@ -60,6 +87,7 @@ export default function Hoje() {
         Hoje
       </Text>
       {content}
+      <LevelUp level={newLevel} onClose={() => setNewLevel(null)} />
     </ScrollView>
   );
 }
