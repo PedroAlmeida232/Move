@@ -1,4 +1,9 @@
-import { dayTotals, goalPct, parseAmount, validateMeal } from '../../src/domain/diet';
+import {
+  dayTotals,
+  goalPct,
+  parseAmount,
+  validateMeal,
+} from '../../src/domain/diet';
 
 describe('parseAmount', () => {
   it('lê números com vírgula ou ponto', () => {
@@ -15,7 +20,13 @@ describe('parseAmount', () => {
 });
 
 describe('validateMeal', () => {
-  const ok = { name: 'Almoço', kcal: '650', protein: '42', carbs: '', fat: '18,5' };
+  const ok = {
+    name: 'Almoço',
+    kcal: '650',
+    protein: '42',
+    carbs: '',
+    fat: '18,5',
+  };
 
   it('aceita uma refeição válida e trata macros vazios como 0', () => {
     expect(validateMeal(ok)).toEqual({
@@ -30,23 +41,37 @@ describe('validateMeal', () => {
     });
   });
 
-  it.each(['', '0', '-10', 'abc'])('exige calorias positivas (recusa "%s")', (kcal) => {
-    const { errors, meal } = validateMeal({ ...ok, kcal });
-    expect(errors).toEqual({ kcal: 'Informe as calorias (número maior que zero).' });
-    expect(meal).toBeNull();
-  });
+  it.each(['', '0', '-10', 'abc'])(
+    'exige calorias positivas (recusa "%s")',
+    (kcal) => {
+      const { errors, meal } = validateMeal({ ...ok, kcal });
+      expect(errors).toEqual({
+        kcal: 'Informe as calorias (número maior que zero).',
+      });
+      expect(meal).toBeNull();
+    },
+  );
 
-  it.each(['protein', 'carbs', 'fat'] as const)('recusa %s negativo ou não numérico', (campo) => {
-    expect(validateMeal({ ...ok, [campo]: '-3' }).errors).toEqual({
-      [campo]: 'Use um número positivo.',
-    });
-    expect(validateMeal({ ...ok, [campo]: 'x' }).errors).toEqual({
-      [campo]: 'Use um número positivo.',
-    });
-  });
+  it.each(['protein', 'carbs', 'fat'] as const)(
+    'recusa %s negativo ou não numérico',
+    (campo) => {
+      expect(validateMeal({ ...ok, [campo]: '-3' }).errors).toEqual({
+        [campo]: 'Use um número positivo.',
+      });
+      expect(validateMeal({ ...ok, [campo]: 'x' }).errors).toEqual({
+        [campo]: 'Use um número positivo.',
+      });
+    },
+  );
 
   it('junta todos os erros de uma vez', () => {
-    const { errors } = validateMeal({ name: '', kcal: '', protein: '-1', carbs: 'a', fat: '' });
+    const { errors } = validateMeal({
+      name: '',
+      kcal: '',
+      protein: '-1',
+      carbs: 'a',
+      fat: '',
+    });
     expect(Object.keys(errors)).toEqual(['name', 'kcal', 'protein', 'carbs']);
   });
 });

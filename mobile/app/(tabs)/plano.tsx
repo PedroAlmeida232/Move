@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { weekdayOf } from '../../src/domain/workout';
-import { PlanStatus } from '../../src/features/workout/PlanState';
 import { usePlan } from '../../src/features/workout/usePlan';
 import { fonts, useTheme } from '../../src/lib/theme';
 import { todayKey } from '../../src/lib/time';
+import { LoadStatus } from '../../src/lib/ui';
 
 const DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const ORDER = [1, 2, 3, 4, 5, 6, 0];
@@ -17,7 +17,7 @@ export default function Plano() {
 
   const day =
     plan.state.status === 'ready'
-      ? plan.state.plan.days.find((d) => d.weekday === selected)
+      ? plan.state.data.days.find((d) => d.weekday === selected)
       : undefined;
 
   return (
@@ -58,7 +58,11 @@ export default function Plano() {
         ))}
       </View>
 
-      <PlanStatus {...plan} />
+      <LoadStatus
+        {...plan}
+        loadingText="Carregando treino…"
+        errorText="Não foi possível carregar o treino. Verifique sua conexão."
+      />
 
       {plan.state.status === 'ready' ? (
         day && day.exercises.length > 0 ? (

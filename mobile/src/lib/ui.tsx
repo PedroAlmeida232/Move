@@ -171,3 +171,37 @@ const styles = StyleSheet.create({
   link: { minHeight: 44, justifyContent: 'center', alignItems: 'center' },
   linkText: { fontFamily: fonts.native, fontSize: 16 },
 });
+
+/** Carregando e erro com "Tentar de novo", iguais em todas as telas que buscam dados. */
+export function LoadStatus({
+  state,
+  retry,
+  loadingText,
+  errorText,
+}: {
+  state: { status: 'loading' | 'error' | 'ready' };
+  retry: () => void;
+  loadingText: string;
+  errorText: string;
+}) {
+  const theme = useTheme();
+  if (state.status === 'loading') {
+    return (
+      <Text
+        accessibilityLiveRegion="polite"
+        style={{ color: theme.muted, fontFamily: fonts.native }}
+      >
+        {loadingText}
+      </Text>
+    );
+  }
+  if (state.status === 'error') {
+    return (
+      <View style={{ gap: 12 }}>
+        <ErrorText>{errorText}</ErrorText>
+        <PrimaryButton title="Tentar de novo" onPress={retry} />
+      </View>
+    );
+  }
+  return null;
+}

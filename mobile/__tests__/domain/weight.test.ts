@@ -1,4 +1,8 @@
-import { chartPoints, sortByDate, validateWeight } from '../../src/domain/weight';
+import {
+  chartPoints,
+  sortByDate,
+  validateWeight,
+} from '../../src/domain/weight';
 
 describe('validateWeight', () => {
   it('aceita de 20 a 400 kg (limites inclusivos), com vírgula', () => {
@@ -21,7 +25,10 @@ describe('sortByDate', () => {
       { date: '2026-11-20', kg: 80 },
       { date: '2026-11-01', kg: 82 },
     ];
-    expect(sortByDate(entries).map((e) => e.date)).toEqual(['2026-11-01', '2026-11-20']);
+    expect(sortByDate(entries).map((e) => e.date)).toEqual([
+      '2026-11-01',
+      '2026-11-20',
+    ]);
     expect(entries[0].date).toBe('2026-11-20');
   });
 });
