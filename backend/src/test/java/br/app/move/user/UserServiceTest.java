@@ -1,0 +1,56 @@
+package br.app.move.user;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import br.app.move.PostgresTestConfig;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+
+@SpringBootTest(properties = "firebase.project-id=move-teste")
+@Import(PostgresTestConfig.class)
+class UserServiceTest {
+
+    @Autowired
+    private UserService service;
+
+    @Autowired
+    private UserRepository repository;
+
+    @Test
+    void primeiroAcessoCriaOUsuario() {
+        User user = service.findOrCreate("uid-primeiro", "a@move.app");
+
+        assertThat(user.getId()).isNotNull();
+        assertThat(user.getFirebaseUid()).isEqualTo("uid-primeiro");
+        assertThat(user.getEmail()).isEqualTo("a@move.app");
+        assertThat(repository.findByFirebaseUid("uid-primeiro")).isPresent();
+    }
+
+    @Test
+    void segundoAcessoReaproveitaSemDuplicar() {
+        User primeiro = service.findOrCreate("uid-repetido", "b@move.app");
+        User segundo = service.findOrCreate("uid-repetido", "b@move.app");
+
+        assertThat(segundo.getId()).isEqualTo(primeiro.getId());
+        assertThat(repository.findAll().stream()
+                        .filter(u -> u.getFirebaseUid().equals("uid-repetido")))
+                .hasSize(1);
+    }
+
+    @Test
+    void usuariosDiferentesRecebemLinhasDiferentes() {
+        User a = service.findOrCreate("uid-a", "a@move.app");
+        User b = service.findOrCreate("uid-b", "b@move.app");
+
+        assertThat(a.getId()).isNotEqualTo(b.getId());
+    }
+
+    @Test
+    void tokenSemEmailCriaUsuarioComEmailNulo() {
+        User user = service.findOrCreate("uid-sem-email", null);
+
+        assertThat(user.getEmail()).isNull();
+    }
+}
