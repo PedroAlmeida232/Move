@@ -25,7 +25,10 @@ describe('histórico', () => {
   });
 
   it('getMealHistory busca todas as refeições e as metas', async () => {
-    const body = { meals: [], goals: { kcal: 2000, protein: 140, carbs: 0, fat: 0 } };
+    const body = {
+      meals: [],
+      goals: { kcal: 2000, protein: 140, carbs: 0, fat: 0 },
+    };
     mockFetch.mockResolvedValue(resposta(200, body));
 
     await expect(getMealHistory()).resolves.toEqual(body);
@@ -40,7 +43,9 @@ describe('histórico', () => {
   });
 
   it('getAchievements devolve as conquistas desbloqueadas', async () => {
-    const achievements = [{ code: 'first', unlockedAt: '2026-11-20T21:30:05.000Z' }];
+    const achievements = [
+      { code: 'first', unlockedAt: '2026-11-20T21:30:05.000Z' },
+    ];
     mockFetch.mockResolvedValue(resposta(200, { achievements }));
 
     await expect(getAchievements()).resolves.toEqual(achievements);
@@ -49,10 +54,21 @@ describe('histórico', () => {
 
   it.each([
     ['getWorkouts', () => getWorkouts(), 'Falha ao carregar os treinos (500)'],
-    ['getMealHistory', () => getMealHistory(), 'Falha ao carregar as refeições (500)'],
-    ['getAchievements', () => getAchievements(), 'Falha ao carregar as conquistas (500)'],
-  ])('%s falha com o status quando a API responde com erro', async (_nome, chamar, mensagem) => {
-    mockFetch.mockResolvedValue(resposta(500));
-    await expect(chamar()).rejects.toThrow(mensagem);
-  });
+    [
+      'getMealHistory',
+      () => getMealHistory(),
+      'Falha ao carregar as refeições (500)',
+    ],
+    [
+      'getAchievements',
+      () => getAchievements(),
+      'Falha ao carregar as conquistas (500)',
+    ],
+  ])(
+    '%s falha com o status quando a API responde com erro',
+    async (_nome, chamar, mensagem) => {
+      mockFetch.mockResolvedValue(resposta(500));
+      await expect(chamar()).rejects.toThrow(mensagem);
+    },
+  );
 });

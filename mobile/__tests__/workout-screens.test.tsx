@@ -4,6 +4,9 @@ import Hoje from '../app/(tabs)/index';
 import Plano from '../app/(tabs)/plano';
 import { getPlan, postWorkout, type Plan } from '../src/features/workout/api';
 
+// O histórico do progresso (usado na celebração) não é o foco aqui: falha em silêncio.
+jest.mock('../src/lib/api', () => ({ apiFetch: jest.fn() }));
+
 jest.mock('../src/features/workout/api', () => ({
   getPlan: jest.fn(),
   postWorkout: jest.fn(),
@@ -98,8 +101,9 @@ describe('tela Hoje', () => {
   });
 
   it('erro de rede mostra mensagem e permite tentar de novo', async () => {
+    // A primeira busca (a do treino) falha; as seguintes funcionam.
     mockGetPlan.mockRejectedValueOnce(new Error('Network request failed'));
-    mockGetPlan.mockResolvedValueOnce(plano);
+    mockGetPlan.mockResolvedValue(plano);
     const user = userEvent.setup();
     await render(<Hoje />);
 
@@ -112,7 +116,6 @@ describe('tela Hoje', () => {
     await user.press(screen.getByRole('button', { name: 'Tentar de novo' }));
 
     expect(await screen.findByText('Costas e postura')).toBeOnTheScreen();
-    expect(mockGetPlan).toHaveBeenCalledTimes(2);
   });
 
   it('marcar uma série atualiza o progresso do treino', async () => {

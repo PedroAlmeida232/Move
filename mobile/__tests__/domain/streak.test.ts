@@ -102,12 +102,20 @@ describe('bestStreak', () => {
   });
 
   it('é a maior sequência do histórico, não a atual', () => {
-    const days = ['2026-11-01', '2026-11-02', '2026-11-03', '2026-11-05', '2026-11-06'];
+    const days = [
+      '2026-11-01',
+      '2026-11-02',
+      '2026-11-03',
+      '2026-11-05',
+      '2026-11-06',
+    ];
     expect(bestStreak(days)).toBe(3);
   });
 
   it('ignora repetidas e aceita fora de ordem', () => {
-    expect(bestStreak(['2026-11-03', '2026-11-01', '2026-11-02', '2026-11-02'])).toBe(3);
+    expect(
+      bestStreak(['2026-11-03', '2026-11-01', '2026-11-02', '2026-11-02']),
+    ).toBe(3);
   });
 
   it('dias de descanso não quebram nem somam', () => {

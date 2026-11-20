@@ -106,7 +106,9 @@ describe('restWeekdays', () => {
   });
 
   it('são os dias da semana sem exercício no plano', () => {
-    expect(restWeekdays([dia(1, 3), dia(3, 2), dia(5, 0)])).toEqual([0, 2, 4, 5, 6]);
+    expect(restWeekdays([dia(1, 3), dia(3, 2), dia(5, 0)])).toEqual([
+      0, 2, 4, 5, 6,
+    ]);
   });
 
   it('sem plano (ou plano sem exercícios), nenhum dia é descanso', () => {

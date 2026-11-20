@@ -1,5 +1,6 @@
 import { render, screen, userEvent } from '@testing-library/react-native';
 import * as Haptics from 'expo-haptics';
+import { Stack, Tabs } from 'expo-router';
 import { renderRouter, testRouter } from 'expo-router/testing-library';
 import { Text } from 'react-native';
 
@@ -98,7 +99,28 @@ beforeEach(() => {
 
 afterEach(() => jest.useRealTimers());
 
-const rotas = { index: Progresso, outra: () => <Text>Outra tela</Text> };
+// Abas, como no app: a tela de progresso continua montada ao trocar de aba.
+function Raiz() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(abas)" />
+    </Stack>
+  );
+}
+function Abas() {
+  return (
+    <Tabs screenOptions={{ headerShown: false }}>
+      <Tabs.Screen name="index" />
+      <Tabs.Screen name="outra" />
+    </Tabs>
+  );
+}
+const rotas = {
+  _layout: Raiz,
+  '(abas)/_layout': Abas,
+  '(abas)/index': Progresso,
+  '(abas)/outra': () => <Text>Outra tela</Text>,
+};
 
 describe('tela Progresso', () => {
   it('a barra de nível reflete o XP calculado pelas funções puras', async () => {
@@ -171,7 +193,7 @@ describe('tela Progresso', () => {
       { code: 'first', unlockedAt: '2026-11-20T15:05:00.000Z' },
     ]);
     await testRouter.navigate('/outra');
-    await testRouter.back('/');
+    await testRouter.navigate('/');
 
     expect(await screen.findByText('Conquistas 1/8')).toBeOnTheScreen();
     expect(screen.getByText('Desbloqueada em 20/11')).toBeOnTheScreen();

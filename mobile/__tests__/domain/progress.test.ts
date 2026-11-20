@@ -21,7 +21,11 @@ describe('summarize', () => {
       }),
     ).toEqual({
       xp: 0,
-      level: expect.objectContaining({ index: 0, name: 'Iniciante', xpToNext: 500 }),
+      level: expect.objectContaining({
+        index: 0,
+        name: 'Iniciante',
+        xpToNext: 500,
+      }),
       streak: 0,
       bestStreak: 0,
       workouts: 0,
