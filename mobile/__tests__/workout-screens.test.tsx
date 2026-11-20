@@ -28,7 +28,9 @@ const plano: Plan = {
     {
       weekday: 1,
       name: 'Peito e ombros',
-      exercises: [{ id: 'e3', name: 'Supino com halteres', sets: 3, reps: '8' }],
+      exercises: [
+        { id: 'e3', name: 'Supino com halteres', sets: 3, reps: '8' },
+      ],
     },
   ],
 };
@@ -81,14 +83,18 @@ describe('tela Hoje', () => {
     await render(<Hoje />);
 
     expect(await screen.findByText('Dia livre')).toBeOnTheScreen();
-    expect(screen.queryByRole('button', { name: 'Concluir treino' })).not.toBeOnTheScreen();
+    expect(
+      screen.queryByRole('button', { name: 'Concluir treino' }),
+    ).not.toBeOnTheScreen();
   });
 
   it('mostra o estado vazio quando o usuário ainda não tem plano', async () => {
     mockGetPlan.mockResolvedValue({ days: [] });
     await render(<Hoje />);
 
-    expect(await screen.findByText('Você ainda não tem um plano de treino.')).toBeOnTheScreen();
+    expect(
+      await screen.findByText('Você ainda não tem um plano de treino.'),
+    ).toBeOnTheScreen();
   });
 
   it('erro de rede mostra mensagem e permite tentar de novo', async () => {
@@ -98,7 +104,9 @@ describe('tela Hoje', () => {
     await render(<Hoje />);
 
     expect(
-      await screen.findByText('Não foi possível carregar o treino. Verifique sua conexão.'),
+      await screen.findByText(
+        'Não foi possível carregar o treino. Verifique sua conexão.',
+      ),
     ).toBeOnTheScreen();
 
     await user.press(screen.getByRole('button', { name: 'Tentar de novo' }));
@@ -113,14 +121,21 @@ describe('tela Hoje', () => {
     await render(<Hoje />);
     await screen.findByText('Costas e postura');
 
-    await user.press(screen.getByRole('checkbox', { name: 'Concluir série 1 de Serrote' }));
+    await user.press(
+      screen.getByRole('checkbox', { name: 'Concluir série 1 de Serrote' }),
+    );
 
     expect(screen.getByText('1 de 4 séries')).toBeOnTheScreen();
     expect(
-      screen.getByRole('checkbox', { name: 'Concluir série 1 de Serrote', checked: true }),
+      screen.getByRole('checkbox', {
+        name: 'Concluir série 1 de Serrote',
+        checked: true,
+      }),
     ).toBeOnTheScreen();
 
-    await user.press(screen.getByRole('checkbox', { name: 'Concluir série 1 de Serrote' }));
+    await user.press(
+      screen.getByRole('checkbox', { name: 'Concluir série 1 de Serrote' }),
+    );
 
     expect(screen.getByText('0 de 4 séries')).toBeOnTheScreen();
   });
@@ -131,20 +146,34 @@ describe('tela Hoje', () => {
     await render(<Hoje />);
     await screen.findByText('Costas e postura');
 
-    expect(screen.getByRole('button', { name: 'Concluir treino' })).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Concluir treino' }),
+    ).toBeDisabled();
 
-    await user.press(screen.getByRole('checkbox', { name: 'Concluir série 1 de Serrote' }));
+    await user.press(
+      screen.getByRole('checkbox', { name: 'Concluir série 1 de Serrote' }),
+    );
     await user.press(screen.getByRole('button', { name: 'Concluir treino' }));
 
     expect(mockPostWorkout).not.toHaveBeenCalled();
   });
 
   async function fazerTudo(user: ReturnType<typeof userEvent.setup>) {
-    await user.type(screen.getByLabelText('Carga da série 1 de Serrote'), '12,5');
-    await user.type(screen.getByLabelText('Repetições da série 1 de Serrote'), '10');
+    await user.type(
+      screen.getByLabelText('Carga da série 1 de Serrote'),
+      '12,5',
+    );
+    await user.type(
+      screen.getByLabelText('Repetições da série 1 de Serrote'),
+      '10',
+    );
     for (const nome of ['Serrote', 'Face pull']) {
       for (const n of [1, 2]) {
-        await user.press(screen.getByRole('checkbox', { name: `Concluir série ${n} de ${nome}` }));
+        await user.press(
+          screen.getByRole('checkbox', {
+            name: `Concluir série ${n} de ${nome}`,
+          }),
+        );
       }
     }
   }
@@ -171,7 +200,9 @@ describe('tela Hoje', () => {
         { exerciseId: 'e2', setNumber: 2, kg: null, reps: null, done: true },
       ],
     });
-    expect(screen.queryByRole('button', { name: 'Concluir treino' })).not.toBeOnTheScreen();
+    expect(
+      screen.queryByRole('button', { name: 'Concluir treino' }),
+    ).not.toBeOnTheScreen();
   });
 
   it('erro de rede ao concluir mostra mensagem e permite tentar de novo', async () => {
@@ -186,7 +217,9 @@ describe('tela Hoje', () => {
     await user.press(screen.getByRole('button', { name: 'Concluir treino' }));
 
     expect(
-      await screen.findByText('Não foi possível salvar o treino. Tente de novo.'),
+      await screen.findByText(
+        'Não foi possível salvar o treino. Tente de novo.',
+      ),
     ).toBeOnTheScreen();
     expect(screen.getByText('4 de 4 séries')).toBeOnTheScreen();
 
@@ -203,7 +236,9 @@ describe('tela Plano', () => {
     await render(<Plano />);
 
     expect(await screen.findByText('Costas e postura')).toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'Sex', selected: true })).toBeOnTheScreen();
+    expect(
+      screen.getByRole('button', { name: 'Sex', selected: true }),
+    ).toBeOnTheScreen();
     expect(screen.getByText('Serrote')).toBeOnTheScreen();
     expect(screen.getByText('2 × 10 a 12')).toBeOnTheScreen();
   });
@@ -239,7 +274,9 @@ describe('tela Plano', () => {
     await render(<Plano />);
 
     expect(
-      await screen.findByText('Não foi possível carregar o treino. Verifique sua conexão.'),
+      await screen.findByText(
+        'Não foi possível carregar o treino. Verifique sua conexão.',
+      ),
     ).toBeOnTheScreen();
 
     await user.press(screen.getByRole('button', { name: 'Tentar de novo' }));
