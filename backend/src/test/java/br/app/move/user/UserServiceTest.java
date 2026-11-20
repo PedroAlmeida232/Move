@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import br.app.move.TesteDeIntegracao;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 @TesteDeIntegracao
 class UserServiceTest {
@@ -42,6 +43,18 @@ class UserServiceTest {
         User b = service.findOrCreate("uid-b", "b@move.app");
 
         assertThat(a.getId()).isNotEqualTo(b.getId());
+    }
+
+    @Test
+    void fromTokenUsaOSubjectEOEmailDoToken() {
+        Jwt jwt = Jwt.withTokenValue("t").header("alg", "none")
+                .subject("uid-do-token").claim("email", "t@move.app").build();
+
+        User user = service.fromToken(jwt);
+
+        assertThat(user.getFirebaseUid()).isEqualTo("uid-do-token");
+        assertThat(user.getEmail()).isEqualTo("t@move.app");
+        assertThat(service.fromToken(jwt).getId()).isEqualTo(user.getId());
     }
 
     @Test

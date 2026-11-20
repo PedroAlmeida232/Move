@@ -20,7 +20,7 @@ public class MeController {
     /** O usuário vem sempre do token; nada enviado pelo cliente escolhe quem é. */
     @GetMapping
     public MeResponse me(@AuthenticationPrincipal Jwt jwt) {
-        User user = userService.findOrCreate(jwt.getSubject(), jwt.getClaimAsString("email"));
+        User user = userService.fromToken(jwt);
         return new MeResponse(user.getId(), user.getEmail());
     }
 

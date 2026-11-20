@@ -1,5 +1,6 @@
 package br.app.move.user;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -36,7 +37,7 @@ class MeControllerTest {
         UUID id = UUID.randomUUID();
         User user = new User("uid-1", "a@move.app");
         ReflectionTestUtils.setField(user, "id", id);
-        when(userService.findOrCreate("uid-1", "a@move.app")).thenReturn(user);
+        when(userService.fromToken(argThat(j -> "uid-1".equals(j.getSubject())))).thenReturn(user);
 
         mockMvc.perform(get("/api/v1/me")
                         .with(jwt().jwt(j -> j.subject("uid-1").claim("email", "a@move.app"))))
@@ -49,7 +50,7 @@ class MeControllerTest {
     void usuarioVemSempreDoTokenNuncaDoCliente() throws Exception {
         User user = new User("uid-1", "a@move.app");
         ReflectionTestUtils.setField(user, "id", UUID.randomUUID());
-        when(userService.findOrCreate("uid-1", "a@move.app")).thenReturn(user);
+        when(userService.fromToken(argThat(j -> "uid-1".equals(j.getSubject())))).thenReturn(user);
 
         mockMvc.perform(get("/api/v1/me")
                         .param("id", UUID.randomUUID().toString())
@@ -58,7 +59,8 @@ class MeControllerTest {
                         .with(jwt().jwt(j -> j.subject("uid-1").claim("email", "a@move.app"))))
                 .andExpect(status().isOk());
 
-        verify(userService).findOrCreate("uid-1", "a@move.app");
+        verify(userService).fromToken(argThat(j -> "uid-1".equals(j.getSubject())
+                && "a@move.app".equals(j.getClaimAsString("email"))));
     }
 
     @Test
