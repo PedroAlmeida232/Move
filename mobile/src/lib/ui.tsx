@@ -11,7 +11,7 @@ import {
   type TextInputProps,
 } from 'react-native';
 
-import { fonts, useTheme } from '../../lib/theme';
+import { fonts, useTheme } from './theme';
 
 export function AuthScreen({
   title,
@@ -93,22 +93,24 @@ export function PrimaryButton({
   title,
   onPress,
   busy,
+  disabled,
 }: {
   title: string;
   onPress: () => void;
   busy?: boolean;
+  disabled?: boolean;
 }) {
   const theme = useTheme();
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
-      accessibilityState={{ disabled: !!busy, busy: !!busy }}
-      disabled={busy}
+      accessibilityState={{ disabled: !!(busy || disabled), busy: !!busy }}
+      disabled={busy || disabled}
       onPress={onPress}
       style={[
         styles.button,
-        { backgroundColor: theme.blue, opacity: busy ? 0.6 : 1 },
+        { backgroundColor: theme.blue, opacity: busy || disabled ? 0.5 : 1 },
       ]}
     >
       {busy ? (

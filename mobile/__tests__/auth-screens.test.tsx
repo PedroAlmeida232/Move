@@ -15,8 +15,16 @@ import Entrar from '../app/(auth)/entrar';
 import RecuperarSenha from '../app/(auth)/recuperar-senha';
 import NotFound from '../app/+not-found';
 import RootLayout from '../app/_layout';
-import Home from '../app/index';
+import TabsLayout from '../app/(tabs)/_layout';
+import Hoje from '../app/(tabs)/index';
+import Plano from '../app/(tabs)/plano';
+import { getPlan } from '../src/features/workout/api';
 import { POLICY_URL } from '../src/lib/links';
+
+jest.mock('../src/features/workout/api', () => ({
+  getPlan: jest.fn().mockResolvedValue({ days: [] }),
+  postWorkout: jest.fn(),
+}));
 
 jest.mock('@react-native-firebase/auth', () => ({
   getAuth: jest.fn(),
@@ -30,7 +38,9 @@ jest.mock('@react-native-firebase/auth', () => ({
 const rotas = {
   _layout: RootLayout,
   '+not-found': NotFound,
-  index: Home,
+  '(tabs)/_layout': TabsLayout,
+  '(tabs)/index': Hoje,
+  '(tabs)/plano': Plano,
   '(auth)/_layout': AuthLayout,
   '(auth)/entrar': Entrar,
   '(auth)/criar-conta': CriarConta,
@@ -55,6 +65,7 @@ async function digitar(
 
 beforeEach(() => {
   jest.resetAllMocks();
+  (getPlan as jest.Mock).mockResolvedValue({ days: [] });
   (getAuth as jest.Mock).mockReturnValue({});
   (onAuthStateChanged as jest.Mock).mockImplementation((_auth, callback) => {
     emitir = callback;
@@ -68,20 +79,24 @@ describe('guarda de rotas', () => {
 
     expect(app.getPathname()).toBe('/entrar');
     expect(screen.getByRole('button', { name: 'Entrar' })).toBeOnTheScreen();
-    expect(screen.queryByText('Move')).not.toBeOnTheScreen();
+    expect(
+      screen.queryByRole('header', { name: 'Hoje' }),
+    ).not.toBeOnTheScreen();
   });
 
   it('com sessão, mostra a tela inicial e tira o usuário do login', async () => {
     const app = await abrir('/entrar', { uid: 'u1' });
 
     expect(app.getPathname()).toBe('/');
-    expect(screen.getByText('Move')).toBeOnTheScreen();
+    expect(screen.getByRole('header', { name: 'Hoje' })).toBeOnTheScreen();
   });
 
   it('não mostra nada enquanto a sessão ainda carrega', async () => {
     await renderRouter(rotas, { initialUrl: '/' });
 
-    expect(screen.queryByText('Move')).not.toBeOnTheScreen();
+    expect(
+      screen.queryByRole('header', { name: 'Hoje' }),
+    ).not.toBeOnTheScreen();
     expect(
       screen.queryByRole('button', { name: 'Entrar' }),
     ).not.toBeOnTheScreen();
@@ -147,7 +162,9 @@ describe('entrar', () => {
       'pedro@move.app',
       'segredo1',
     );
-    expect(await screen.findByText('Move')).toBeOnTheScreen();
+    expect(
+      await screen.findByRole('header', { name: 'Hoje' }),
+    ).toBeOnTheScreen();
     expect(app.getPathname()).toBe('/');
   });
 
@@ -217,7 +234,9 @@ describe('criar conta', () => {
       'pedro@move.app',
       'segredo1',
     );
-    expect(await screen.findByText('Move')).toBeOnTheScreen();
+    expect(
+      await screen.findByRole('header', { name: 'Hoje' }),
+    ).toBeOnTheScreen();
   });
 
   it('valida e-mail e senha antes de chamar o Firebase', async () => {
