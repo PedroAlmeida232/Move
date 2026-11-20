@@ -1,5 +1,6 @@
 import {
   initialSets,
+  restWeekdays,
   setsToPayload,
   weekdayOf,
   workoutProgress,
@@ -95,5 +96,21 @@ describe('setsToPayload', () => {
     ]);
 
     expect(set.reps).toBe(8);
+  });
+});
+
+describe('restWeekdays', () => {
+  const dia = (weekday: number, exercicios: number) => ({
+    weekday,
+    exercises: Array.from({ length: exercicios }, () => ({})),
+  });
+
+  it('são os dias da semana sem exercício no plano', () => {
+    expect(restWeekdays([dia(1, 3), dia(3, 2), dia(5, 0)])).toEqual([0, 2, 4, 5, 6]);
+  });
+
+  it('sem plano (ou plano sem exercícios), nenhum dia é descanso', () => {
+    expect(restWeekdays([])).toEqual([]);
+    expect(restWeekdays([dia(2, 0)])).toEqual([]);
   });
 });
