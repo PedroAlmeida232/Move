@@ -2,7 +2,7 @@
 
 Legenda: `[ ]` pendente · `[x]` feito (PR mergeado na dev). Faça sempre a primeira `[ ]` cujas dependências estejam feitas. Regras completas em `CLAUDE.md`.
 
-- [ ] **B01** · [INFRA] Estrutura do repositório (só README, template de PR e docs; não criar `mobile/`) · `feature/repo-structure` · https://trello.com/c/XlsqmAQf · depende: —
+- [x] **B01** · [INFRA] Estrutura do repositório (só README, template de PR e docs; não criar `mobile/`) · `feature/repo-structure` · https://trello.com/c/XlsqmAQf · depende: —
 - [ ] **B02** · [BE] Esqueleto Spring Boot com endpoint de saúde · `feature/backend-skeleton` · https://trello.com/c/yyoJAmug · depende: —
 - [ ] **B03** · [BE] Banco: Flyway, Testcontainers e Supabase · `feature/db-setup` · https://trello.com/c/9LAGZsws · depende: B02, Docker rodando
 - [ ] **B04** · [BE] Validar o token do Firebase · `feature/backend-firebase-auth` · https://trello.com/c/0BIZ0lHZ · depende: B02
