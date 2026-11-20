@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@SpringBootTest
+@SpringBootTest(properties = "firebase.project-id=move-teste")
 @Import(PostgresTestConfig.class)
 class MigracaoV1Test {
 

@@ -6,6 +6,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import br.app.move.health.HealthController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@WebMvcTest(controllers = SecurityConfigTest.ProtegidoController.class)
+@WebMvcTest(controllers = {SecurityConfigTest.ProtegidoController.class, HealthController.class})
 @Import({SecurityConfig.class, SecurityConfigTest.ProtegidoController.class})
 class SecurityConfigTest {
 
