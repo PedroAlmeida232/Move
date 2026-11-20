@@ -9,8 +9,14 @@ describe('authErrorMessage', () => {
     ['auth/email-already-in-use', 'Já existe uma conta com esse e-mail.'],
     ['auth/weak-password', 'A senha deve ter pelo menos 6 caracteres.'],
     ['auth/user-disabled', 'Esta conta foi desativada.'],
-    ['auth/too-many-requests', 'Muitas tentativas. Aguarde um pouco e tente de novo.'],
-    ['auth/network-request-failed', 'Sem conexão com a internet. Verifique e tente de novo.'],
+    [
+      'auth/too-many-requests',
+      'Muitas tentativas. Aguarde um pouco e tente de novo.',
+    ],
+    [
+      'auth/network-request-failed',
+      'Sem conexão com a internet. Verifique e tente de novo.',
+    ],
   ])('traduz %s', (code, message) => {
     expect(authErrorMessage({ code })).toBe(message);
   });
