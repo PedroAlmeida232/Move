@@ -89,3 +89,15 @@ describe('useAuth', () => {
     expect(cancelar).toHaveBeenCalled();
   });
 });
+
+describe('useAuth fora do AuthProvider', () => {
+  it('falha com mensagem clara', async () => {
+    const erro = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(renderHook(() => useAuth())).rejects.toThrow(
+      'useAuth deve ser usado dentro de AuthProvider',
+    );
+
+    erro.mockRestore();
+  });
+});

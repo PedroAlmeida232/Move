@@ -17,7 +17,7 @@ function resposta(status: number) {
 beforeEach(() => {
   jest.resetAllMocks();
   process.env.EXPO_PUBLIC_API_URL = 'https://api.exemplo.com';
-  global.fetch = fetchMock;
+  globalThis.fetch = fetchMock;
   (getAuth as jest.Mock).mockReturnValue({ currentUser: { getIdToken } });
   getIdToken.mockResolvedValue('token-1');
 });
