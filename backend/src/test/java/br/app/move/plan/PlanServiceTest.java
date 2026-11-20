@@ -3,7 +3,7 @@ package br.app.move.plan;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import br.app.move.PostgresTestConfig;
+import br.app.move.TesteDeIntegracao;
 import br.app.move.plan.PlanData.DayData;
 import br.app.move.plan.PlanData.ExerciseData;
 import br.app.move.plan.PlanData.ProfileData;
@@ -14,13 +14,10 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-@SpringBootTest(properties = "firebase.project-id=move-teste")
-@Import(PostgresTestConfig.class)
+@TesteDeIntegracao
 class PlanServiceTest {
 
     private static final ProfileData SEM_PERFIL = new ProfileData(null, null);

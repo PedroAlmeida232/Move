@@ -2,16 +2,13 @@ package br.app.move.plan;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import br.app.move.PostgresTestConfig;
+import br.app.move.TesteDeIntegracao;
 import br.app.move.user.UserService;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-@SpringBootTest(properties = "firebase.project-id=move-teste")
-@Import(PostgresTestConfig.class)
+@TesteDeIntegracao
 class PlanDayRepositoryTest {
 
     @Autowired
