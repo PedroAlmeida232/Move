@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
 } from '@react-native-firebase/auth';
@@ -15,6 +16,7 @@ jest.mock('@react-native-firebase/auth', () => ({
   onAuthStateChanged: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
   createUserWithEmailAndPassword: jest.fn(),
+  sendPasswordResetEmail: jest.fn(),
   signOut: jest.fn(),
 }));
 
@@ -79,6 +81,14 @@ describe('useAuth', () => {
       'segredo2',
     );
     expect(signOut).toHaveBeenCalledWith(auth);
+  });
+
+  it('resetPassword pede o e-mail de recuperação ao Firebase', async () => {
+    const { result } = await renderHook(() => useAuth(), { wrapper });
+
+    await act(() => result.current.resetPassword('a@b.com'));
+
+    expect(sendPasswordResetEmail).toHaveBeenCalledWith(auth, 'a@b.com');
   });
 
   it('cancela a escuta ao desmontar', async () => {
