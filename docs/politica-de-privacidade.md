@@ -56,7 +56,7 @@ Também podemos divulgar dados se a lei ou uma ordem judicial exigir.
 
 ## 6. Transferência internacional
 
-Os prestadores acima podem armazenar ou processar dados fora do Brasil, incluindo Estados Unidos e outros países. Fazemos isso com base no art. 33 da LGPD, usando prestadores que adotam cláusulas contratuais padrão e medidas de segurança adequadas. Os dados do banco ficam na região [REGIÃO DO SUPABASE, ex.: São Paulo].
+Os prestadores acima podem armazenar ou processar dados fora do Brasil, incluindo Estados Unidos e outros países. Fazemos isso com base no art. 33 da LGPD, usando prestadores que adotam cláusulas contratuais padrão e medidas de segurança adequadas. Os dados do banco e o servidor da API ficam nos Estados Unidos (Virgínia).
 
 ## 7. Por quanto tempo guardamos
 
@@ -115,7 +115,7 @@ Dúvidas, pedidos ou reclamações sobre privacidade: **pedrominato23@gmail.com*
 
 ## Notas internas (apagar antes de publicar)
 
-- Substituir os campos que restam entre colchetes: data de publicação e região do Supabase.
+- Substituir os campos que restam entre colchetes: data de publicação (a região do Supabase já está definida: Estados Unidos, Virgínia).
 - Publicar em uma URL pública (por exemplo, GitHub Pages) e informá-la no App Store Connect e dentro do app (tela de cadastro e Ajustes).
 - No cadastro, incluir caixa de consentimento (não pré-marcada) para o tratamento de dados de saúde, com link para esta política.
 - Refazer esta revisão se entrar qualquer SDK novo (análise, anúncios, notificações push, Apple Saúde), pois muda a lista de dados e prestadores.
