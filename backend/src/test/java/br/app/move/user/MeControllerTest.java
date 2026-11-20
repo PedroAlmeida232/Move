@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(MeController.class)
@@ -34,7 +35,7 @@ class MeControllerTest {
     void devolveIdEEmailDoUsuarioDoToken() throws Exception {
         UUID id = UUID.randomUUID();
         User user = new User("uid-1", "a@move.app");
-        user.setId(id);
+        ReflectionTestUtils.setField(user, "id", id);
         when(userService.findOrCreate("uid-1", "a@move.app")).thenReturn(user);
 
         mockMvc.perform(get("/api/v1/me")
@@ -47,7 +48,7 @@ class MeControllerTest {
     @Test
     void usuarioVemSempreDoTokenNuncaDoCliente() throws Exception {
         User user = new User("uid-1", "a@move.app");
-        user.setId(UUID.randomUUID());
+        ReflectionTestUtils.setField(user, "id", UUID.randomUUID());
         when(userService.findOrCreate("uid-1", "a@move.app")).thenReturn(user);
 
         mockMvc.perform(get("/api/v1/me")

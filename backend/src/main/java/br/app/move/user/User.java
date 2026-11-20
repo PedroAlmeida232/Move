@@ -35,10 +35,6 @@ public class User {
         return id;
     }
 
-    void setId(UUID id) {
-        this.id = id;
-    }
-
     public String getFirebaseUid() {
         return firebaseUid;
     }
