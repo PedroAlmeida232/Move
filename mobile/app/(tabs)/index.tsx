@@ -1,11 +1,11 @@
 import { ScrollView, StyleSheet, Text } from 'react-native';
 
 import { weekdayOf } from '../../src/domain/workout';
-import { PlanStatus } from '../../src/features/workout/PlanState';
 import { TodayWorkout } from '../../src/features/workout/TodayWorkout';
 import { usePlan } from '../../src/features/workout/usePlan';
 import { fonts, useTheme } from '../../src/lib/theme';
 import { todayKey } from '../../src/lib/time';
+import { LoadStatus } from '../../src/lib/ui';
 
 function Empty({ title, text }: { title: string; text: string }) {
   const theme = useTheme();
@@ -23,10 +23,16 @@ export default function Hoje() {
   const { state } = plan;
   const today = weekdayOf(todayKey());
 
-  let content = <PlanStatus {...plan} />;
+  let content = (
+    <LoadStatus
+      {...plan}
+      loadingText="Carregando treino…"
+      errorText="Não foi possível carregar o treino. Verifique sua conexão."
+    />
+  );
   if (state.status === 'ready') {
-    const day = state.plan.days.find((d) => d.weekday === today);
-    if (state.plan.days.length === 0) {
+    const day = state.data.days.find((d) => d.weekday === today);
+    if (state.data.days.length === 0) {
       content = (
         <Empty
           title="Sem plano"

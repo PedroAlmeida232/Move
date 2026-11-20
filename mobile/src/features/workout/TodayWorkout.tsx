@@ -64,6 +64,8 @@ export function TodayWorkout({ day }: { day: PlanDay }) {
         {day.name}
       </Text>
       <View
+        accessible
+        accessibilityLabel="Progresso do treino"
         accessibilityRole="progressbar"
         accessibilityValue={{ min: 0, max: 100, now: progress.pct }}
       >

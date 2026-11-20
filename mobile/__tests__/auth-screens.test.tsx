@@ -17,6 +17,8 @@ import NotFound from '../app/+not-found';
 import RootLayout from '../app/_layout';
 import TabsLayout from '../app/(tabs)/_layout';
 import Hoje from '../app/(tabs)/index';
+import Dieta from '../app/(tabs)/dieta';
+import Peso from '../app/(tabs)/peso';
 import Plano from '../app/(tabs)/plano';
 import { getPlan } from '../src/features/workout/api';
 import { POLICY_URL } from '../src/lib/links';
@@ -41,6 +43,8 @@ const rotas = {
   '(tabs)/_layout': TabsLayout,
   '(tabs)/index': Hoje,
   '(tabs)/plano': Plano,
+  '(tabs)/dieta': Dieta,
+  '(tabs)/peso': Peso,
   '(auth)/_layout': AuthLayout,
   '(auth)/entrar': Entrar,
   '(auth)/criar-conta': CriarConta,
