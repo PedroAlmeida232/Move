@@ -10,7 +10,7 @@ Legenda: `[ ]` pendente · `[x]` feito (PR mergeado na dev). Faça sempre a prim
 - [ ] **B06** · [INFRA] CI no GitHub Actions · `feature/ci` · https://trello.com/c/4qQGCHoe · depende: B02 e M01 (esqueleto mobile mergeado)
 - [x] **B07** · [DB][BE] Perfil e plano de treino · `feature/plan` · https://trello.com/c/M6pUPjKh · depende: B05
 - [x] **B08** · [DB][BE] Registrar treinos feitos · `feature/workout-log` · https://trello.com/c/LEiPeCeD · depende: B05
-- [ ] **B09** · [DB][BE] Refeições e metas de dieta · `feature/meals` · https://trello.com/c/qBHF9lf6 · depende: B05
+- [x] **B09** · [DB][BE] Refeições e metas de dieta · `feature/meals` · https://trello.com/c/qBHF9lf6 · depende: B05
 - [ ] **B10** · [DB][BE] Registro de peso e medidas · `feature/weight` · https://trello.com/c/ao2P89U5 · depende: B05
 - [ ] **B11** · [DB][BE] Conquistas e missões · `feature/achievements` · https://trello.com/c/uzUss4iA · depende: B08
 - [ ] **B12** · [BE] Excluir conta (parte da API: `DELETE /me`, cascade e remoção no Firebase) · `feature/delete-account-api` · https://trello.com/c/SjFv3aSp · depende: B07 a B11 (todas as tabelas). Requer chave de administrador do Firebase: peça ao Pedro, só nas variáveis da Railway.
