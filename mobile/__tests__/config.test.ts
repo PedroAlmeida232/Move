@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -12,7 +13,9 @@ function carregarConfig(env: Record<string, string> = {}): ExpoConfig {
   Object.assign(process.env, env);
   try {
     let config!: ExpoConfig;
+    // Recarrega o módulo para ler as variáveis de ambiente deste teste.
     jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       config = require('../app.config').default;
     });
     return config;
@@ -84,7 +87,11 @@ describe('app.config', () => {
     const config = carregarConfig();
     const splash = plugin(config, 'expo-splash-screen') as [
       string,
-      { image: string; backgroundColor: string; dark: { backgroundColor: string } },
+      {
+        image: string;
+        backgroundColor: string;
+        dark: { backgroundColor: string };
+      },
     ];
     expect(splash[1].backgroundColor).toBe('#FFFFFF');
     expect(splash[1].dark.backgroundColor).toBe('#000000');
