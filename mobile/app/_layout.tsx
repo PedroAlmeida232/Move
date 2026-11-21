@@ -12,6 +12,14 @@ function Navigator() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={!!user}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="ajustes"
+          options={{
+            headerShown: true,
+            title: 'Ajustes',
+            headerBackTitle: 'Voltar',
+          }}
+        />
       </Stack.Protected>
       <Stack.Protected guard={!user}>
         <Stack.Screen name="(auth)" />

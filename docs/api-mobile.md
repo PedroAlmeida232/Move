@@ -122,3 +122,11 @@ O XP, o nível e a sequência são calculados no app, em funções puras, a part
 - Só as desbloqueadas. O catálogo (nome e descrição) fica no app.
 - Códigos do protótipo: `first` (primeiro treino), `streak7` (7 dias seguidos), `ten` (10 treinos), `w25` (25 treinos), `pr` (novo recorde de carga), `w4` (peso 4 semanas seguidas), `prot5` (meta de proteína em 5 dias), `sets100` (100 séries).
 - O app busca de novo ao abrir a aba Progresso; a conquista nova aparece com a data.
+
+## Excluir conta (B12)
+
+`DELETE /api/v1/me` → `204`, sem corpo.
+
+- Apaga o usuário e todos os dados dele (treinos, plano, refeições, metas, peso, conquistas) e o usuário no Firebase Auth.
+- Qualquer status fora de `2xx` o app trata como falha: mostra "Não foi possível excluir a conta" e mantém a sessão. Por isso, só responda `204` depois que o banco **e** o Firebase confirmarem.
+- Depois do `204` o app encerra a sessão local (`signOut`) e volta para Entrar.
