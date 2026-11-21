@@ -2,6 +2,7 @@ package br.app.move.achievement;
 
 import br.app.move.achievement.AchievementData.View;
 import br.app.move.achievement.AchievementRules.Stats;
+import br.app.move.meal.DietGoals;
 import br.app.move.meal.DietGoalsRepository;
 import br.app.move.meal.MealRepository;
 import br.app.move.meal.MealService;
@@ -103,7 +104,7 @@ public class AchievementService {
 
     private int proteinDays(UUID userId) {
         int meta = dietGoals.findById(userId)
-                .map(g -> g.getProteinG())
+                .map(DietGoals::getProteinG)
                 .orElse(MealService.META_PADRAO.proteinG());
         if (meta <= 0) {
             return 0;

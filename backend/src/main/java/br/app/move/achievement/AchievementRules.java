@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /** Regras puras das conquistas: sem banco, sem relógio. */
 final class AchievementRules {
@@ -87,8 +88,8 @@ final class AchievementRules {
         int sequencia = 0;
         int maior = 0;
         // o dia 0 da época (quinta) está 3 dias depois da segunda: a semana vira na segunda
-        for (long semana : dates.stream().map(d -> Math.floorDiv(d.toEpochDay() + 3, 7)).collect(
-                java.util.stream.Collectors.toCollection(TreeSet::new))) {
+        for (long semana : dates.stream().map(d -> Math.floorDiv(d.toEpochDay() + 3, 7))
+                .collect(Collectors.toCollection(TreeSet::new))) {
             sequencia = anterior != null && semana == anterior + 1 ? sequencia + 1 : 1;
             maior = Math.max(maior, sequencia);
             anterior = semana;
