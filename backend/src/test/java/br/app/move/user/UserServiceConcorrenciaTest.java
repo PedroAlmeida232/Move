@@ -21,7 +21,7 @@ class UserServiceConcorrenciaTest {
         when(repository.save(any(User.class)))
                 .thenThrow(new DataIntegrityViolationException("firebase_uid duplicado"));
 
-        User user = new UserService(repository).findOrCreate("uid-corrida", "c@move.app");
+        User user = new UserService(repository, null).findOrCreate("uid-corrida", "c@move.app");
 
         assertThat(user).isSameAs(existente);
     }

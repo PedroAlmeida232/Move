@@ -71,7 +71,7 @@ class ExcluirContaTest {
         json(post("/api/v1/meals"), uid, REFEICAO);
         json(put("/api/v1/meals/goals"), uid, "{\"kcal\":2200,\"proteinG\":150}");
         json(put("/api/v1/plan"), uid, PLANO);
-        json(put("/api/v1/weight/2026-11-20"), uid, "{\"kg\":80.4,\"waistCm\":null}");
+        json(put("/api/v1/weight/2026-11-20"), uid, "{\"weightKg\":80.4}");
         return jdbc.queryForObject("select id from users where firebase_uid = ?", UUID.class, uid);
     }
 
@@ -116,7 +116,7 @@ class ExcluirContaTest {
         mockMvc.perform(delete("/api/v1/me").with(usuario(ana))).andExpect(status().isNoContent());
 
         assertThat(linhas(idBia)).isEqualTo(antes);
-        mockMvc.perform(get("/api/v1/workouts").with(usuario(bia)))
+        mockMvc.perform(get("/api/v1/workouts?from=2026-01-01T00:00:00Z&to=2027-01-01T00:00:00Z").with(usuario(bia)))
                 .andExpect(jsonPath("$.length()").value(1));
     }
 

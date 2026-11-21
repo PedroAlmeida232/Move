@@ -17,3 +17,5 @@ server:
 
 firebase:
   project-id: ${FIREBASE_PROJECT_ID}
+  # JSON da conta de serviço (chave de administrador). Só em variável de ambiente, nunca no Git.
+  service-account-json: ${FIREBASE_SERVICE_ACCOUNT_JSON:}

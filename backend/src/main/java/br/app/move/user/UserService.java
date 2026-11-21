@@ -8,9 +8,21 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository repository;
+    private final FirebaseAccountRemover firebase;
 
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, FirebaseAccountRemover firebase) {
         this.repository = repository;
+        this.firebase = firebase;
+    }
+
+    /**
+     * Apaga a conta de quem é dono do token: primeiro no Firebase e depois no banco, de onde as
+     * tabelas filhas saem por cascade. Se o Firebase falhar, nada é apagado e dá para tentar de novo.
+     */
+    public void deleteAccount(Jwt jwt) {
+        String firebaseUid = jwt.getSubject();
+        firebase.remove(firebaseUid);
+        repository.deleteByFirebaseUid(firebaseUid);
     }
 
     /** Usuário dono do token: o uid vem do "sub" e o e-mail do claim "email". Nunca do cliente. */

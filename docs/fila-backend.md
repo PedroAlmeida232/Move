@@ -13,5 +13,5 @@ Legenda: `[ ]` pendente · `[x]` feito (PR mergeado na dev). Faça sempre a prim
 - [x] **B09** · [DB][BE] Refeições e metas de dieta · `feature/meals` · https://trello.com/c/qBHF9lf6 · depende: B05
 - [x] **B10** · [DB][BE] Registro de peso e medidas · `feature/weight` · https://trello.com/c/ao2P89U5 · depende: B05
 - [x] **B11** · [DB][BE] Conquistas e missões · `feature/achievements` · https://trello.com/c/uzUss4iA · depende: B08
-- [ ] **B12** · [BE] Excluir conta (parte da API: `DELETE /me`, cascade e remoção no Firebase) · `feature/delete-account-api` · https://trello.com/c/SjFv3aSp · depende: B07 a B11 (todas as tabelas). Requer chave de administrador do Firebase: peça ao Pedro, só nas variáveis da Railway.
+- [x] **B12** · [BE] Excluir conta (parte da API: `DELETE /me`, cascade e remoção no Firebase) · `feature/delete-account-api` · https://trello.com/c/SjFv3aSp · depende: B07 a B11 (todas as tabelas). Requer chave de administrador do Firebase: peça ao Pedro, só nas variáveis da Railway.
 - [ ] **B13** · [BE][INFRA] Dockerfile e deploy na Railway · `feature/deploy-api` · https://trello.com/c/1q9dH8Kc · depende: B03, B04. Partes humanas: conta e variáveis na Railway (região US East).

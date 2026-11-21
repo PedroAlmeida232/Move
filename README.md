@@ -55,7 +55,7 @@ set -a; source .env; set +a
 ./mvnw spring-boot:run             # sobe a API em http://localhost:8080
 ```
 
-Variáveis de ambiente: `DATABASE_URL`, `DATABASE_USER`, `DATABASE_PASSWORD` e `FIREBASE_PROJECT_ID`. A senha do banco fica só no `.env` local e na Railway.
+Variáveis de ambiente: `DATABASE_URL`, `DATABASE_USER`, `DATABASE_PASSWORD` e `FIREBASE_PROJECT_ID`. Opcional: `FIREBASE_SERVICE_ACCOUNT_JSON` (chave de administrador, só para excluir conta; sem ela `DELETE /api/v1/me` responde 503). Senha e chave ficam só no `.env` local e na Railway. Teste manual da exclusão de conta: [`backend/docs/excluir-conta-teste-manual.md`](backend/docs/excluir-conta-teste-manual.md).
 
 ### Mobile (`mobile/`)
 
