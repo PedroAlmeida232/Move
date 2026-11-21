@@ -1,0 +1,12 @@
+# Nada de segredo nem de lixo de build dentro da imagem.
+.env
+.env.*
+target/
+.git
+.gitignore
+.idea/
+.vscode/
+*.iml
+Dockerfile
+.dockerignore
+src/test/

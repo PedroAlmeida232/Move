@@ -57,6 +57,44 @@ set -a; source .env; set +a
 
 Variáveis de ambiente: `DATABASE_URL`, `DATABASE_USER`, `DATABASE_PASSWORD` e `FIREBASE_PROJECT_ID`. A senha do banco fica só no `.env` local e na Railway.
 
+### Deploy da API (Railway)
+
+A API roda na Railway a partir do `backend/Dockerfile` (multi-stage, Java 21) e é publicada sozinha a cada merge na `main`.
+
+Configuração do serviço na Railway:
+
+| Item | Valor |
+| --- | --- |
+| Região | US East |
+| Root Directory | `backend` |
+| Branch de deploy | `main` |
+| Healthcheck | `/api/v1/health` |
+
+Variáveis (aba Variables do serviço; nunca no Git):
+
+| Variável | Para quê |
+| --- | --- |
+| `DATABASE_URL` | JDBC do Supabase (Session pooler, porta 5432, `sslmode=require`) |
+| `DATABASE_USER` | usuário do pooler |
+| `DATABASE_PASSWORD` | senha do banco |
+| `FIREBASE_PROJECT_ID` | `move-1ed45` |
+| `SPRING_PROFILES_ACTIVE` | `prod` |
+
+A porta vem da variável `PORT`, que a própria Railway define.
+
+Para testar a imagem na sua máquina, com um Postgres em contêiner (nunca o Supabase real):
+
+```bash
+cd backend
+docker build -t move-api .
+docker network create move-net
+docker run -d --rm --name move-pg --network move-net -e POSTGRES_PASSWORD=teste postgres:16-alpine
+docker run --rm --network move-net -p 8080:8080 \
+  -e DATABASE_URL=jdbc:postgresql://move-pg:5432/postgres -e DATABASE_USER=postgres \
+  -e DATABASE_PASSWORD=teste -e FIREBASE_PROJECT_ID=move-teste move-api
+curl localhost:8080/api/v1/health   # {"status":"ok"}
+```
+
 ### Mobile (`mobile/`)
 
 Requisitos: Node.js e o app Expo Go ou um emulador.
