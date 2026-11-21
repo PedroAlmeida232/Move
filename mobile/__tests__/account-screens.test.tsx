@@ -1,4 +1,8 @@
-import { getAuth, onAuthStateChanged, signOut } from '@react-native-firebase/auth';
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+} from '@react-native-firebase/auth';
 import { userEvent } from '@testing-library/react-native';
 import { act, renderRouter, screen } from 'expo-router/testing-library';
 
