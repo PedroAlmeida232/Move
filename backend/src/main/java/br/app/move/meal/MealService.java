@@ -1,5 +1,6 @@
 package br.app.move.meal;
 
+import br.app.move.achievement.AchievementService;
 import br.app.move.meal.MealData.DayResponse;
 import br.app.move.meal.MealData.Goals;
 import br.app.move.meal.MealData.MealRequest;
@@ -20,19 +21,22 @@ import org.springframework.web.server.ResponseStatusException;
 public class MealService {
 
     /** Meta padrão do protótipo, usada enquanto o usuário não define a dele. */
-    static final Goals META_PADRAO = new Goals(2000, 140);
+    public static final Goals META_PADRAO = new Goals(2000, 140);
 
     private final MealRepository meals;
     private final DietGoalsRepository goals;
+    private final AchievementService achievements;
 
-    public MealService(MealRepository meals, DietGoalsRepository goals) {
+    public MealService(MealRepository meals, DietGoalsRepository goals, AchievementService achievements) {
         this.meals = meals;
         this.goals = goals;
+        this.achievements = achievements;
     }
 
     @Transactional
     public MealView create(UUID userId, @Valid MealRequest r) {
         Meal meal = meals.save(new Meal(userId, r.date(), r.name(), r.kcal(), r.proteinG(), r.carbsG(), r.fatG()));
+        achievements.evaluate(userId);
         return toView(meal);
     }
 

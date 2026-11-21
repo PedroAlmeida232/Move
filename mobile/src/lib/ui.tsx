@@ -94,11 +94,14 @@ export function PrimaryButton({
   onPress,
   busy,
   disabled,
+  danger,
 }: {
   title: string;
   onPress: () => void;
   busy?: boolean;
   disabled?: boolean;
+  /** Ação destrutiva (ex.: excluir conta). */
+  danger?: boolean;
 }) {
   const theme = useTheme();
   return (
@@ -110,7 +113,10 @@ export function PrimaryButton({
       onPress={onPress}
       style={[
         styles.button,
-        { backgroundColor: theme.blue, opacity: busy || disabled ? 0.5 : 1 },
+        {
+          backgroundColor: danger ? theme.danger : theme.blue,
+          opacity: busy || disabled ? 0.5 : 1,
+        },
       ]}
     >
       {busy ? (

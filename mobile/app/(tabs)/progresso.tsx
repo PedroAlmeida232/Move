@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,7 +11,7 @@ import {
 } from '../../src/features/progress/useProgress';
 import { fonts, useTheme } from '../../src/lib/theme';
 import { deviceTimeZone, todayKey } from '../../src/lib/time';
-import { LoadStatus } from '../../src/lib/ui';
+import { LoadStatus, TextLink } from '../../src/lib/ui';
 
 const days = (n: number) => (n === 1 ? '1 dia' : `${n} dias`);
 
@@ -38,12 +38,15 @@ export default function Progresso() {
       style={{ backgroundColor: theme.bg }}
       contentContainerStyle={styles.screen}
     >
-      <Text
-        accessibilityRole="header"
-        style={[styles.title, { color: theme.ink }]}
-      >
-        Progresso
-      </Text>
+      <View style={styles.row}>
+        <Text
+          accessibilityRole="header"
+          style={[styles.title, { color: theme.ink }]}
+        >
+          Progresso
+        </Text>
+        <TextLink title="Ajustes" onPress={() => router.push('/ajustes')} />
+      </View>
       <LoadStatus
         {...progress}
         loadingText="Carregando progresso…"

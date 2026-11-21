@@ -18,5 +18,10 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
             """)
     List<WorkoutSession> findInRange(UUID userId, Instant from, Instant to);
 
+    /** Todos os treinos do usuário, do mais antigo ao mais novo (base das conquistas). */
+    @EntityGraph(attributePaths = "sets")
+    @Query("select s from WorkoutSession s where s.userId = :userId order by s.performedAt, s.id")
+    List<WorkoutSession> findAllOfUser(UUID userId);
+
     Optional<WorkoutSession> findByIdAndUserId(UUID id, UUID userId);
 }
