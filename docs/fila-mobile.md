@@ -11,4 +11,4 @@ Legenda: `[ ]` pendente · `[x]` feito (PR mergeado na dev). Faça sempre a prim
 - [x] **M07** · [MOB] Telas de progresso, nível e conquistas · `feature/mobile-progress` · https://trello.com/c/VHkcDO2B · depende: M02, M05 (conquistas reais: B11)
 - [x] **M08** · [MOB] Entrar com Apple e Google · `feature/mobile-social-login` · https://trello.com/c/N9fMLTHs · depende: M04. Parte humana: ativar os provedores no Firebase.
 - [ ] **M09** · [MOB] Excluir conta (parte do app, em Ajustes) · `feature/delete-account-app` · https://trello.com/c/SjFv3aSp · depende: M04, B12
-- [ ] **M10** · [MOB][INFRA] Build iOS com EAS e TestFlight · `feature/eas-build` · https://trello.com/c/do5yQBg9 · depende: M04. Partes humanas: EAS e App Store Connect.
+- [x] **M10** · [MOB][INFRA] Build iOS com EAS e TestFlight · `feature/eas-build` · https://trello.com/c/do5yQBg9 · depende: M04. Partes humanas: EAS e App Store Connect.
