@@ -1,5 +1,6 @@
 package br.app.move.workout;
 
+import br.app.move.achievement.AchievementService;
 import br.app.move.workout.WorkoutData.Request;
 import br.app.move.workout.WorkoutData.Response;
 import br.app.move.workout.WorkoutData.SetData;
@@ -21,9 +22,11 @@ public class WorkoutService {
     static final Duration INTERVALO_MAXIMO = Duration.ofDays(366);
 
     private final WorkoutSessionRepository sessions;
+    private final AchievementService achievements;
 
-    public WorkoutService(WorkoutSessionRepository sessions) {
+    public WorkoutService(WorkoutSessionRepository sessions, AchievementService achievements) {
         this.sessions = sessions;
+        this.achievements = achievements;
     }
 
     @Transactional
@@ -32,7 +35,9 @@ public class WorkoutService {
         for (SetData s : request.sets()) {
             session.addSet(s.exercise(), s.weightKg(), s.reps());
         }
-        return toResponse(sessions.save(session));
+        WorkoutSession salva = sessions.save(session);
+        achievements.evaluate(userId);
+        return toResponse(salva);
     }
 
     /** Sessões com performedAt em [from, to), da mais antiga para a mais nova. */

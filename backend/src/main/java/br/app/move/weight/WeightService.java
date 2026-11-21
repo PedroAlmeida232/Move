@@ -1,5 +1,6 @@
 package br.app.move.weight;
 
+import br.app.move.achievement.AchievementService;
 import br.app.move.weight.WeightData.Entry;
 import br.app.move.weight.WeightData.EntryRequest;
 import jakarta.validation.Valid;
@@ -20,9 +21,11 @@ public class WeightService {
     static final long DIAS_MAXIMOS = 366;
 
     private final WeightEntryRepository entries;
+    private final AchievementService achievements;
 
-    public WeightService(WeightEntryRepository entries) {
+    public WeightService(WeightEntryRepository entries, AchievementService achievements) {
         this.entries = entries;
+        this.achievements = achievements;
     }
 
     /** Um registro por dia: o segundo do mesmo dia atualiza o primeiro. */
@@ -31,7 +34,9 @@ public class WeightService {
         WeightEntryId id = new WeightEntryId(userId, date);
         WeightEntry entry = entries.findById(id).orElseGet(() -> new WeightEntry(id, null, null));
         entry.update(request.weightKg(), request.waistCm());
-        return toEntry(entries.save(entry));
+        Entry salvo = toEntry(entries.save(entry));
+        achievements.evaluate(userId);
+        return salvo;
     }
 
     /** Registros de from a to, ambos inclusivos, em ordem de data. */
