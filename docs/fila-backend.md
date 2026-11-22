@@ -15,3 +15,9 @@ Legenda: `[ ]` pendente · `[x]` feito (PR mergeado na dev). Faça sempre a prim
 - [x] **B11** · [DB][BE] Conquistas e missões · `feature/achievements` · https://trello.com/c/uzUss4iA · depende: B08
 - [ ] **B12** · [BE] Excluir conta (parte da API: `DELETE /me`, cascade e remoção no Firebase) · `feature/delete-account-api` · https://trello.com/c/SjFv3aSp · depende: B07 a B11 (todas as tabelas). Requer chave de administrador do Firebase: peça ao Pedro, só nas variáveis da Railway.
 - [ ] **B13** · [BE][INFRA] Dockerfile e deploy na Railway · `feature/deploy-api` · https://trello.com/c/1q9dH8Kc · depende: B03, B04. Partes humanas: conta e variáveis na Railway (região US East).
+
+## Pedidos do mobile
+
+- [ ] **P01** · [BE] `GET /api/v1/meals` com histórico: aceitar `from` e `to` (dias, até 366, como em `/weight`) e devolver as refeições do período, no mesmo formato de `meals` do dia. Hoje só existe `?date=`, então o app só enxerga o dia de hoje e o XP de proteína dos dias anteriores, a sequência e as conquistas `PROT_5` ficam incompletos. Pedido pelo mobile em `feature/mobile-alinhar-contrato`.
+- [ ] **P02** · [BE] (opcional) Metas de carboidrato e gordura em `/meals/goals`. A API só tem `kcal` e `proteinG`; o app usa 220 g e 60 g fixos para as barras da dieta.
+

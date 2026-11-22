@@ -56,7 +56,10 @@ export function TodayWorkout({
       sets: setsToPayload(exercises),
     };
     try {
-      await postWorkout(workout);
+      await postWorkout(
+        workout,
+        Object.fromEntries(day.exercises.map((e) => [e.id, e.name])),
+      );
     } catch {
       setSave('error');
       return;
