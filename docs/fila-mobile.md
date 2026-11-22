@@ -12,3 +12,18 @@ Legenda: `[ ]` pendente · `[x]` feito (PR mergeado na dev). Faça sempre a prim
 - [x] **M08** · [MOB] Entrar com Apple e Google · `feature/mobile-social-login` · https://trello.com/c/N9fMLTHs · depende: M04. Parte humana: ativar os provedores no Firebase.
 - [x] **M09** · [MOB] Excluir conta (parte do app, em Ajustes) · `feature/delete-account-app` · https://trello.com/c/SjFv3aSp · depende: M04, B12
 - [ ] **M10** · [MOB][INFRA] Build iOS com EAS e TestFlight · `feature/eas-build` · https://trello.com/c/do5yQBg9 · depende: M04. Partes humanas: EAS e App Store Connect.
+
+## Sprint 6 · Redesign
+
+Direção visual: estilo Apple (fundo cinza-claro, cards brancos arredondados, azul só como destaque, fonte do sistema), modo escuro revisado. Ícones Ionicons; gráficos com `react-native-svg`. Telas novas usam só os tokens (D01) e os componentes (D02).
+
+- [ ] **D01** · [MOB] Tokens de design · `feature/design-tokens` · https://trello.com/c/riTAHfM3 · depende: —
+- [ ] **D02** · [MOB] Componentes base · `feature/design-components` · https://trello.com/c/hheCnQds · depende: D01
+- [ ] **D03** · [MOB] Navegação com ícones · `feature/design-navigation` · https://trello.com/c/hweJK689 · depende: D02
+- [ ] **D04** · [MOB] Tela Hoje · `feature/design-today` · https://trello.com/c/uyfxV5IU · depende: D03 e mockup aprovado pelo Pedro
+- [ ] **D05** · [MOB] Plano e treino · `feature/design-workout` · https://trello.com/c/kyO0eWzI · depende: D04
+- [ ] **D06** · [MOB] Dieta · `feature/design-diet` · https://trello.com/c/C96e4Sel · depende: D04
+- [ ] **D07** · [MOB] Peso · `feature/design-weight` · https://trello.com/c/IGcJDJh1 · depende: D06
+- [ ] **D08** · [MOB] Progresso e conquistas · `feature/design-progress` · https://trello.com/c/Op4JUnop · depende: D04
+- [ ] **D09** · [MOB] Login e Ajustes · `feature/design-auth-settings` · https://trello.com/c/syvwRNMq · depende: D02
+- [ ] **D10** · [MOB] Polimento e acessibilidade · `feature/design-polish` · https://trello.com/c/Ae9yVBB8 · depende: D04 a D09
