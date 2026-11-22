@@ -14,18 +14,45 @@ const resposta = (status: number, body?: unknown) => ({
 beforeEach(() => jest.resetAllMocks());
 
 describe('refeições', () => {
-  it('getMeals busca as refeições e metas do dia', async () => {
-    const body = {
-      meals: [],
-      goals: { kcal: 2000, protein: 140, carbs: 220, fat: 60 },
-    };
-    mockFetch.mockResolvedValue(resposta(200, body));
+  it('getMeals busca o dia e converte para o formato do app', async () => {
+    mockFetch.mockResolvedValue(
+      resposta(200, {
+        date: '2026-11-20',
+        meals: [
+          {
+            id: 'm1',
+            date: '2026-11-20',
+            name: 'Almoço',
+            kcal: 650,
+            proteinG: 42.5,
+            carbsG: 70,
+            fatG: 18,
+          },
+        ],
+        totals: { kcal: 650, proteinG: 42.5, carbsG: 70, fatG: 18 },
+        goals: { kcal: 2000, proteinG: 140 },
+        remaining: { kcal: 1350, proteinG: 97.5 },
+      }),
+    );
 
-    await expect(getMeals('2026-11-20')).resolves.toEqual(body);
+    await expect(getMeals('2026-11-20')).resolves.toEqual({
+      meals: [
+        {
+          id: 'm1',
+          date: '2026-11-20',
+          name: 'Almoço',
+          kcal: 650,
+          protein: 42.5,
+          carbs: 70,
+          fat: 18,
+        },
+      ],
+      goals: { kcal: 2000, protein: 140, carbs: 220, fat: 60 },
+    });
     expect(mockFetch).toHaveBeenCalledWith('/api/v1/meals?date=2026-11-20');
   });
 
-  it('postMeal envia a refeição e devolve a criada', async () => {
+  it('postMeal envia os campos do backend e devolve a refeição criada', async () => {
     const meal = {
       date: '2026-11-20',
       name: 'Almoço',
@@ -34,14 +61,31 @@ describe('refeições', () => {
       carbs: 70,
       fat: 18,
     };
-    mockFetch.mockResolvedValue(resposta(201, { id: 'm1', ...meal }));
+    mockFetch.mockResolvedValue(
+      resposta(201, {
+        id: 'm1',
+        date: '2026-11-20',
+        name: 'Almoço',
+        kcal: 650,
+        proteinG: 42,
+        carbsG: 70,
+        fatG: 18,
+      }),
+    );
 
     await expect(postMeal(meal)).resolves.toEqual({ id: 'm1', ...meal });
     const [path, init] = mockFetch.mock.calls[0];
     expect(path).toBe('/api/v1/meals');
     expect(init.method).toBe('POST');
     expect(init.headers).toEqual({ 'Content-Type': 'application/json' });
-    expect(JSON.parse(init.body)).toEqual(meal);
+    expect(JSON.parse(init.body)).toEqual({
+      date: '2026-11-20',
+      name: 'Almoço',
+      kcal: 650,
+      proteinG: 42,
+      carbsG: 70,
+      fatG: 18,
+    });
   });
 
   it('falha com o status quando a API responde com erro', async () => {
@@ -65,21 +109,34 @@ describe('refeições', () => {
 });
 
 describe('peso', () => {
-  it('getWeights busca o período pedido', async () => {
-    const entries = [{ date: '2026-11-20', kg: 80.4, waistCm: null }];
-    mockFetch.mockResolvedValue(resposta(200, { entries }));
+  afterEach(() => jest.useRealTimers());
 
-    await expect(getWeights('2026-08-23', '2026-11-20')).resolves.toEqual(
-      entries,
+  it('getWeights busca o período pedido e converte weightKg em kg', async () => {
+    mockFetch.mockResolvedValue(
+      resposta(200, [{ date: '2026-11-20', weightKg: 80.4, waistCm: null }]),
     );
+
+    await expect(getWeights('2026-08-23', '2026-11-20')).resolves.toEqual([
+      { date: '2026-11-20', kg: 80.4, waistCm: null },
+    ]);
     expect(mockFetch).toHaveBeenCalledWith(
       '/api/v1/weight?from=2026-08-23&to=2026-11-20',
     );
   });
 
-  it('putWeight grava o peso do dia', async () => {
+  it('getWeights sem período pede o último ano (o backend exige from e to)', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-11-20T15:00:00Z'));
+    mockFetch.mockResolvedValue(resposta(200, []));
+
+    await expect(getWeights()).resolves.toEqual([]);
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/v1/weight?from=2025-11-20&to=2026-11-20',
+    );
+  });
+
+  it('putWeight envia weightKg e devolve o registro convertido', async () => {
     mockFetch.mockResolvedValue(
-      resposta(200, { date: '2026-11-20', kg: 80.4, waistCm: null }),
+      resposta(200, { date: '2026-11-20', weightKg: 80.4, waistCm: null }),
     );
 
     await expect(putWeight('2026-11-20', 80.4)).resolves.toEqual({
@@ -90,7 +147,7 @@ describe('peso', () => {
     const [path, init] = mockFetch.mock.calls[0];
     expect(path).toBe('/api/v1/weight/2026-11-20');
     expect(init.method).toBe('PUT');
-    expect(JSON.parse(init.body)).toEqual({ kg: 80.4, waistCm: null });
+    expect(JSON.parse(init.body)).toEqual({ weightKg: 80.4, waistCm: null });
   });
 
   it('falha com o status quando a API responde com erro', async () => {

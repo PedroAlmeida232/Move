@@ -193,16 +193,19 @@ describe('tela Hoje', () => {
 
     expect(await screen.findByText('Treino concluído!')).toBeOnTheScreen();
     expect(mockPostWorkout).toHaveBeenCalledTimes(1);
-    expect(mockPostWorkout).toHaveBeenCalledWith({
-      performedAt: AGORA.toISOString(),
-      finished: true,
-      sets: [
-        { exerciseId: 'e1', setNumber: 1, kg: 12.5, reps: 10, done: true },
-        { exerciseId: 'e1', setNumber: 2, kg: null, reps: null, done: true },
-        { exerciseId: 'e2', setNumber: 1, kg: null, reps: null, done: true },
-        { exerciseId: 'e2', setNumber: 2, kg: null, reps: null, done: true },
-      ],
-    });
+    expect(mockPostWorkout).toHaveBeenCalledWith(
+      {
+        performedAt: AGORA.toISOString(),
+        finished: true,
+        sets: [
+          { exerciseId: 'e1', setNumber: 1, kg: 12.5, reps: 10, done: true },
+          { exerciseId: 'e1', setNumber: 2, kg: null, reps: null, done: true },
+          { exerciseId: 'e2', setNumber: 1, kg: null, reps: null, done: true },
+          { exerciseId: 'e2', setNumber: 2, kg: null, reps: null, done: true },
+        ],
+      },
+      { e1: 'Serrote', e2: 'Face pull' },
+    );
     expect(
       screen.queryByRole('button', { name: 'Concluir treino' }),
     ).not.toBeOnTheScreen();
