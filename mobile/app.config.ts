@@ -17,7 +17,7 @@ const config: ExpoConfig = {
   scheme: 'move',
   ios: {
     supportsTablet: false,
-    bundleIdentifier: 'br.app.move',
+    bundleIdentifier: 'br.app.movetreino',
     usesAppleSignIn: true,
     googleServicesFile: firebaseIos,
     infoPlist: {
@@ -26,7 +26,7 @@ const config: ExpoConfig = {
     },
   },
   android: {
-    package: 'br.app.move',
+    package: 'br.app.movetreino',
     googleServicesFile: firebaseAndroid,
     adaptiveIcon: {
       backgroundColor: '#2563EB',
@@ -39,13 +39,14 @@ const config: ExpoConfig = {
   web: {
     favicon: './assets/favicon.png',
   },
+  extra: { eas: { projectId: '33aadfd9-8ada-44e7-9efb-ed102eb23f28' } },
   plugins: [
     'expo-router',
     'expo-apple-authentication',
     '@react-native-google-signin/google-signin',
     '@react-native-firebase/app',
     '@react-native-firebase/auth',
-    ['expo-build-properties', { ios: { useFrameworks: 'static' } }],
+    ['expo-build-properties', { ios: { useFrameworks: 'dynamic' } }],
     [
       'expo-splash-screen',
       {

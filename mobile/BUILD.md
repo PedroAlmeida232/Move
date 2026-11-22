@@ -18,14 +18,14 @@ A configuração está em `app.config.ts` e `eas.json`. Os passos abaixo precisa
    extra: { eas: { projectId: '<id>' } },
    ```
    O `projectId` não é segredo.
-3. Arquivos do Firebase (baixe do console, projeto `move-1ed45`, apps `br.app.move`) como **variáveis de arquivo** do EAS, nunca no Git:
+3. Arquivos do Firebase (baixe do console, projeto `move-1ed45`, apps `br.app.movetreino`) como **variáveis de arquivo** do EAS, nunca no Git:
    ```sh
    eas env:create --name GOOGLE_SERVICES_PLIST --type file --value ./GoogleService-Info.plist --visibility secret --environment development --environment preview --environment production
    eas env:create --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json --visibility secret --environment development --environment preview --environment production
    ```
 4. `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` e o endereço da API (`EXPO_PUBLIC_API_URL`) como variáveis de texto nos três ambientes (`--visibility plaintext`).
-5. Apple Developer: o EAS cria o App ID `br.app.move` e os certificados no primeiro build. Confira que a capability **Sign in with Apple** está ativa no App ID.
-6. App Store Connect: crie o app **Move** com o Bundle ID `br.app.move`, idioma principal português (Brasil).
+5. Apple Developer: o EAS cria o App ID `br.app.movetreino` e os certificados no primeiro build. Confira que a capability **Sign in with Apple** está ativa no App ID.
+6. App Store Connect: crie o app **Move** com o Bundle ID `br.app.movetreino`, idioma principal português (Brasil).
 
 ## Gerar e enviar
 
