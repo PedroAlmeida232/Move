@@ -1,6 +1,7 @@
 import { Platform, useColorScheme } from 'react-native';
 
-// Cores e fonte extraídas de prototype/index.html (variantes claro e escuro).
+// Cores extraídas de prototype/index.html (variantes claro e escuro), mais as
+// semânticas. Toda cor de texto tem contraste AA (≥ 4,5:1) sobre bg e card.
 export const themes = {
   light: {
     bg: '#F2F2F7',
@@ -15,6 +16,9 @@ export const themes = {
     r2: '#38BDF8',
     r3: '#1E3A8A',
     danger: '#C62828',
+    sucesso: '#1E7B34',
+    alerta: '#9A5B00',
+    erro: '#C62828',
   },
   dark: {
     bg: '#000000',
@@ -29,6 +33,9 @@ export const themes = {
     r2: '#5AC8FA',
     r3: '#8E9BFF',
     danger: '#FF6B6B',
+    sucesso: '#32D74B',
+    alerta: '#FFB340',
+    erro: '#FF6B6B',
   },
 };
 
@@ -40,6 +47,29 @@ export const fonts = {
     '-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,"Segoe UI",Roboto,sans-serif',
   native: Platform.select({ ios: 'System', default: 'sans-serif' }),
 };
+
+// Escala de texto: os únicos 6 estilos permitidos nas telas.
+export const type = {
+  largeTitle: { fontSize: 34, lineHeight: 41, fontWeight: '700' },
+  title: { fontSize: 22, lineHeight: 28, fontWeight: '700' },
+  headline: { fontSize: 17, lineHeight: 22, fontWeight: '600' },
+  body: { fontSize: 17, lineHeight: 22, fontWeight: '400' },
+  callout: { fontSize: 15, lineHeight: 20, fontWeight: '400' },
+  caption: { fontSize: 13, lineHeight: 18, fontWeight: '400' },
+} as const;
+
+export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
+
+export const radius = { sm: 8, md: 12, lg: 16, full: 999 } as const;
+
+// Sombra leve só no claro; no escuro o card já se destaca do fundo preto.
+export const shadow = {
+  card: Platform.select({
+    ios: { shadowColor: '#000000', shadowOpacity: 0.06, shadowRadius: 12, shadowOffset: { width: 0, height: 2 } },
+    default: { elevation: 2 },
+  }),
+  none: {},
+} as const;
 
 export function useTheme(): Theme {
   return useColorScheme() === 'dark' ? themes.dark : themes.light;
