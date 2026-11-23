@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-// Telas e features só podem usar os tokens de src/lib/theme.ts: nada de
+// Telas, features e componentes base só podem usar os tokens de src/lib/theme.ts: nada de
 // fontSize nem cor hexadecimal solta.
 const ROOT = path.join(__dirname, '..');
-const DIRS = ['app', 'src/features'];
+const DIRS = ['app', 'src/features', 'src/lib/ui'];
 const ALLOWED = new Set(['src/lib/theme.ts']);
 const LOOSE = /fontSize|#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?(?:[0-9a-fA-F]{2})?\b/;
 

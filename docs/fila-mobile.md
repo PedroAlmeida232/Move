@@ -18,7 +18,7 @@ Legenda: `[ ]` pendente · `[x]` feito (PR mergeado na dev). Faça sempre a prim
 Direção visual: estilo Apple (fundo cinza-claro, cards brancos arredondados, azul só como destaque, fonte do sistema), modo escuro revisado. Ícones Ionicons; gráficos com `react-native-svg`. Telas novas usam só os tokens (D01) e os componentes (D02).
 
 - [x] **D01** · [MOB] Tokens de design · `feature/design-tokens` · https://trello.com/c/riTAHfM3 · depende: —
-- [ ] **D02** · [MOB] Componentes base · `feature/design-components` · https://trello.com/c/hheCnQds · depende: D01
+- [x] **D02** · [MOB] Componentes base · `feature/design-components` · https://trello.com/c/hheCnQds · depende: D01
 - [ ] **D03** · [MOB] Navegação com ícones · `feature/design-navigation` · https://trello.com/c/hweJK689 · depende: D02
 - [ ] **D04** · [MOB] Tela Hoje · `feature/design-today` · https://trello.com/c/uyfxV5IU · depende: D03 e mockup aprovado pelo Pedro
 - [ ] **D05** · [MOB] Plano e treino · `feature/design-workout` · https://trello.com/c/kyO0eWzI · depende: D04
