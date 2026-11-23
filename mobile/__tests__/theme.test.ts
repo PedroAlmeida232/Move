@@ -1,4 +1,4 @@
-import { fonts, radius, shadow, space, themes, type } from '../src/lib/theme';
+import { fonts, radius, shadow, space, themes, touchTarget, type } from '../src/lib/theme';
 
 // Luminância relativa e razão de contraste (WCAG 2.1), sem biblioteca.
 function luminance(hex: string): number {
@@ -67,6 +67,10 @@ describe('espaços, raios e sombra', () => {
     expect(Object.values(space).sort((a, b) => a - b)).toEqual([4, 8, 12, 16, 24, 32]);
   });
 
+  it('alvo de toque tem ao menos 44', () => {
+    expect(touchTarget).toBeGreaterThanOrEqual(44);
+  });
+
   it('define raios e sombra de card', () => {
     expect(radius.lg).toBeGreaterThan(radius.md);
     expect(shadow.card).toBeDefined();
@@ -88,6 +92,11 @@ describe('cores', () => {
     it.each(textColors)('%s tem contraste AA sobre o fundo e o card', (c) => {
       expect(contrast(t[c], t.bg)).toBeGreaterThanOrEqual(4.5);
       expect(contrast(t[c], t.card)).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('texto dos botões tem contraste AA', () => {
+      expect(contrast(t.onBlue, t.action)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(t.ink, t.fill)).toBeGreaterThanOrEqual(4.5);
     });
   });
 });
