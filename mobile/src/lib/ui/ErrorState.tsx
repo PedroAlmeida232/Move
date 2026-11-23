@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { fonts, space, type, useTheme } from '../theme';
+import { fonts, iconSize, space, type, useTheme } from '../theme';
 import { Button } from './Button';
 import { Icon } from './Icon';
 
@@ -14,11 +14,7 @@ export function ErrorState({
   const theme = useTheme();
   return (
     <View style={styles.box}>
-      <Icon
-        name="alert-circle"
-        color={theme.erro}
-        size={type.largeTitle.fontSize}
-      />
+      <Icon name="alert-circle" color={theme.erro} size={iconSize.lg} />
       <Text
         accessibilityRole="alert"
         accessibilityLiveRegion="polite"

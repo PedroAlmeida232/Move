@@ -65,6 +65,9 @@ export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
 
 export const radius = { sm: 8, md: 12, lg: 16, full: 999 } as const;
 
+// Tamanho dos ícones, alinhado à escala de texto.
+export const iconSize = { sm: 17, md: 22, lg: 34 } as const;
+
 // Altura mínima de tudo que se toca.
 export const touchTarget = 44;
 

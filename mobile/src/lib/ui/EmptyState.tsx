@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { fonts, space, type, useTheme } from '../theme';
+import { fonts, iconSize, space, type, useTheme } from '../theme';
 import { Button } from './Button';
 import { Icon, type IconName } from './Icon';
 
@@ -21,7 +21,7 @@ export function EmptyState({
   const theme = useTheme();
   return (
     <View style={styles.box}>
-      <Icon name={icon} color={theme.muted} size={type.largeTitle.fontSize} />
+      <Icon name={icon} color={theme.muted} size={iconSize.lg} />
       <Text
         accessibilityRole="header"
         style={[styles.title, { color: theme.ink }]}

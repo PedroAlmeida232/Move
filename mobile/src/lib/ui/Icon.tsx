@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { type ComponentProps } from 'react';
 import { View } from 'react-native';
 
-import { type as text } from '../theme';
+import { iconSize } from '../theme';
 
 export type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -10,7 +10,7 @@ export type IconName = ComponentProps<typeof Ionicons>['name'];
 export function Icon({
   name,
   color,
-  size = text.title.fontSize,
+  size = iconSize.md,
   testID,
 }: {
   name: IconName;

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { fonts, space, touchTarget, type, useTheme } from '../theme';
+import { fonts, iconSize, space, touchTarget, type, useTheme } from '../theme';
 import { Icon, type IconName } from './Icon';
 
 export function ListRow({
@@ -40,7 +40,7 @@ export function ListRow({
           testID="seta"
           name="chevron-forward"
           color={theme.muted}
-          size={type.body.fontSize}
+          size={iconSize.sm}
         />
       ) : null}
     </>
