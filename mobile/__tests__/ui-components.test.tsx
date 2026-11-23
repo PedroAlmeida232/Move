@@ -1,6 +1,5 @@
 import { render, screen, userEvent } from '@testing-library/react-native';
-import { StyleSheet, Text } from 'react-native';
-import useColorScheme from 'react-native/Libraries/Utilities/useColorScheme';
+import { StyleSheet, Text, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { radius, shadow, themes } from '../src/lib/theme';
