@@ -11,6 +11,8 @@ export const themes = {
     sep: 'rgba(60,60,67,.16)',
     fill: '#EEEEF2',
     blue: '#2563EB',
+    // Fundo do botão principal: onBlue tem contraste AA sobre ela.
+    action: '#2563EB',
     onBlue: '#FFFFFF',
     tint: 'rgba(37,99,235,.11)',
     r2: '#38BDF8',
@@ -28,6 +30,7 @@ export const themes = {
     sep: 'rgba(120,120,128,.34)',
     fill: '#2C2C2E',
     blue: '#4C8DFF',
+    action: '#2563EB',
     onBlue: '#FFFFFF',
     tint: 'rgba(76,141,255,.2)',
     r2: '#5AC8FA',
@@ -61,6 +64,9 @@ export const type = {
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
 
 export const radius = { sm: 8, md: 12, lg: 16, full: 999 } as const;
+
+// Altura mínima de tudo que se toca.
+export const touchTarget = 44;
 
 // Sombra leve só no claro; no escuro o card já se destaca do fundo preto.
 export const shadow = {
