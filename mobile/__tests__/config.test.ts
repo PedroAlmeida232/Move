@@ -41,11 +41,11 @@ function png(arquivo: string) {
 }
 
 describe('app.config', () => {
-  it('identifica o app como br.app.move no iOS e no Android', () => {
+  it('identifica o app como br.app.movetreino no iOS e no Android', () => {
     const config = carregarConfig();
     expect(config.name).toBe('Move');
-    expect(config.ios?.bundleIdentifier).toBe('br.app.move');
-    expect(config.android?.package).toBe('br.app.move');
+    expect(config.ios?.bundleIdentifier).toBe('br.app.movetreino');
+    expect(config.android?.package).toBe('br.app.movetreino');
   });
 
   it('declara que não usa criptografia própria e fala português', () => {
@@ -54,13 +54,13 @@ describe('app.config', () => {
     expect(ios?.infoPlist?.CFBundleDevelopmentRegion).toBe('pt-BR');
   });
 
-  it('inclui os plugins nativos do Firebase com frameworks estáticos no iOS', () => {
+  it('inclui os plugins nativos do Firebase com frameworks dinâmicos no iOS', () => {
     const config = carregarConfig();
     expect(plugin(config, '@react-native-firebase/app')).toBeDefined();
     expect(plugin(config, '@react-native-firebase/auth')).toBeDefined();
     expect(plugin(config, 'expo-build-properties')).toEqual([
       'expo-build-properties',
-      { ios: { useFrameworks: 'static' } },
+      { ios: { useFrameworks: 'dynamic' } },
     ]);
   });
 
