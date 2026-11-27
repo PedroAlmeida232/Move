@@ -10,13 +10,7 @@ const LOOSE = /fontSize|#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?(?:[0-9a-fA-F]{2})?\b/
 
 // Arquivos que ainda têm valores soltos. Esvazie a lista nas tarefas D04 a D10
 // conforme cada tela for redesenhada; não adicione arquivos novos aqui.
-const PENDENTES = [
-  'app/(auth)/criar-conta.tsx',
-  'app/(auth)/entrar.tsx',
-  'app/(auth)/recuperar-senha.tsx',
-  'app/ajustes.tsx',
-  'src/features/auth/SocialButtons.tsx',
-];
+const PENDENTES: string[] = [];
 
 function sourceFiles(dir: string): string[] {
   return fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap((e) => {

@@ -56,7 +56,7 @@ describe('ajustes em lista agrupada', () => {
   });
 
   it('a política de privacidade abre o link público', async () => {
-    const open = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+    const open = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
     const user = userEvent.setup();
     await renderScreen(<Ajustes />);
 
