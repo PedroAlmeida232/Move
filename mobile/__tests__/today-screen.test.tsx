@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@testing-library/react-native';
+import { screen, userEvent } from '@testing-library/react-native';
 
 import Hoje from '../app/(tabs)/index';
 import { getMealHistory } from '../src/features/meal/api';
@@ -7,6 +7,7 @@ import { getWeights } from '../src/features/weight/api';
 import { getPlan, getWorkouts } from '../src/features/workout/api';
 import { useDisplayName } from '../src/lib/auth';
 import { fakeToday } from '../test-utils/fakeToday';
+import { renderScreen } from '../test-utils/renderScreen';
 
 jest.mock('../src/lib/auth', () => ({ useDisplayName: jest.fn() }));
 jest.mock('../src/features/workout/api', () => ({
@@ -92,7 +93,7 @@ describe('tela Hoje', () => {
   it('a saudação usa o primeiro nome do perfil', async () => {
     mocks.name.mockReturnValue('Pedro Almeida');
     dados();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(await screen.findByText('Bom dia, Pedro')).toBeOnTheScreen();
   });
@@ -100,7 +101,7 @@ describe('tela Hoje', () => {
   it('o anel mostra a porcentagem das missões do dia', async () => {
     // Proteína batida (60 + 40 = 100) e 3 refeições; treino ainda não: 2 de 3.
     dados({ meals: [refeicao(1, 60), refeicao(2, 40), refeicao(3, 0)] });
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(
       await screen.findByRole('progressbar', { name: 'Missões do dia' }),
@@ -110,7 +111,7 @@ describe('tela Hoje', () => {
 
   it('lista as missões do dia marcando as feitas', async () => {
     dados({ meals: [refeicao(1, 100)] });
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(
       await screen.findByRole('checkbox', { name: 'Bata a meta de proteína' }),
@@ -125,7 +126,7 @@ describe('tela Hoje', () => {
 
   it('mostra a sequência de dias', async () => {
     dados({ sessions: [treino('2026-11-26'), treino('2026-11-25')] });
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(
       await screen.findByLabelText('Sequência: 2 dias'),
@@ -135,7 +136,7 @@ describe('tela Hoje', () => {
   it('o card do treino de hoje mostra o nome e abre os exercícios em Começar treino', async () => {
     dados();
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(await screen.findByText('Costas e postura')).toBeOnTheScreen();
     expect(screen.getByText('3 exercícios')).toBeOnTheScreen();
@@ -151,14 +152,14 @@ describe('tela Hoje', () => {
 
   it('com o treino de hoje já concluído, o card avisa', async () => {
     dados({ sessions: [treino('2026-11-27')] });
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(await screen.findByText('Treino de hoje concluído')).toBeOnTheScreen();
   });
 
   it('sem treino hoje, mostra o estado vazio de descanso', async () => {
     dados({ plan: { days: [{ ...plano.days[0], weekday: 1 }] } });
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(await screen.findByText('Dia de descanso')).toBeOnTheScreen();
     expect(
@@ -170,8 +171,10 @@ describe('tela Hoje', () => {
   });
 
   it('carregando, mostra os blocos de esqueleto', async () => {
-    for (const m of Object.values(mocks)) m.mockReturnValue(new Promise(() => {}));
-    await render(<Hoje />);
+    const { name, ...api } = mocks;
+    name.mockReturnValue(null);
+    for (const m of Object.values(api)) m.mockReturnValue(new Promise(() => {}));
+    await renderScreen(<Hoje />);
 
     expect(
       screen.getAllByRole('progressbar', { name: 'Carregando' }).length,
@@ -184,7 +187,7 @@ describe('tela Hoje', () => {
     mocks.plan.mockRejectedValueOnce(new Error('rede'));
     mocks.plan.mockResolvedValue(plano);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(
       await screen.findByRole('alert'),

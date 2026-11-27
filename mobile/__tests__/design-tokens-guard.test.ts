@@ -15,7 +15,6 @@ const PENDENTES = [
   'app/(auth)/entrar.tsx',
   'app/(auth)/recuperar-senha.tsx',
   'app/(tabs)/dieta.tsx',
-  'app/(tabs)/index.tsx',
   'app/(tabs)/peso.tsx',
   'app/(tabs)/plano.tsx',
   'app/(tabs)/progresso.tsx',
