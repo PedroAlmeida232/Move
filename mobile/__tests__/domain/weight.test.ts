@@ -1,7 +1,9 @@
 import {
   chartPoints,
+  rangeStart,
   sortByDate,
   validateWeight,
+  weightChange,
 } from '../../src/domain/weight';
 
 describe('validateWeight', () => {
@@ -75,5 +77,42 @@ describe('chartPoints', () => {
     expect(max).toBeCloseTo(80.35);
     expect(points[0].y).toBeGreaterThan(10);
     expect(points[1].y).toBeLessThan(90);
+  });
+});
+
+describe('weightChange', () => {
+  const e = (date: string, kg: number) => ({ date, kg });
+
+  it('perda: delta negativo, sinal de menos e tom de perda', () => {
+    expect(weightChange([e('2026-11-01', 82), e('2026-11-20', 80.4)])).toEqual({
+      delta: -1.6,
+      text: '−1,6 kg',
+      tone: 'loss',
+    });
+  });
+
+  it('ganho: sinal de mais e tom de ganho', () => {
+    expect(weightChange([e('2026-11-01', 80), e('2026-11-20', 80.6)])).toEqual({
+      delta: 0.6,
+      text: '+0,6 kg',
+      tone: 'gain',
+    });
+  });
+
+  it('sem mudança, ou só um registro: 0 kg, neutro', () => {
+    const flat = { delta: 0, text: '0 kg', tone: 'flat' };
+    expect(weightChange([e('2026-11-01', 80), e('2026-11-20', 80.04)])).toEqual(
+      flat,
+    );
+    expect(weightChange([e('2026-11-20', 80)])).toEqual(flat);
+    expect(weightChange([])).toEqual(flat);
+  });
+});
+
+describe('rangeStart', () => {
+  it('30 e 90 dias contam hoje; tudo não tem início', () => {
+    expect(rangeStart('2026-11-30', '30d')).toBe('2026-11-01');
+    expect(rangeStart('2026-11-30', '90d')).toBe('2026-09-02');
+    expect(rangeStart('2026-11-30', 'all')).toBeUndefined();
   });
 });

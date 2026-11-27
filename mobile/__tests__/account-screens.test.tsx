@@ -99,7 +99,7 @@ describe('ajustes', () => {
     const user = userEvent.setup();
     const app = await abrir('/progresso');
 
-    await user.press(screen.getByRole('link', { name: 'Ajustes' }));
+    await user.press(screen.getByRole('button', { name: 'Ajustes' }));
 
     expect(app.getPathname()).toBe('/ajustes');
     expect(

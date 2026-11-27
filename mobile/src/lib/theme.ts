@@ -21,6 +21,8 @@ export const themes = {
     sucesso: '#1E7B34',
     alerta: '#9A5B00',
     erro: '#C62828',
+    // Véu atrás das folhas que sobem de baixo.
+    scrim: 'rgba(0,0,0,.32)',
   },
   dark: {
     bg: '#000000',
@@ -39,6 +41,7 @@ export const themes = {
     sucesso: '#32D74B',
     alerta: '#FFB340',
     erro: '#FF6B6B',
+    scrim: 'rgba(0,0,0,.6)',
   },
 };
 

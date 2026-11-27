@@ -1,4 +1,4 @@
-import { screen, userEvent } from '@testing-library/react-native';
+import { screen, userEvent, within } from '@testing-library/react-native';
 import * as Haptics from 'expo-haptics';
 import { Stack, Tabs } from 'expo-router';
 import { renderRouter, testRouter } from 'expo-router/testing-library';
@@ -132,9 +132,9 @@ describe('tela Progresso', () => {
 
     expect(await screen.findByText('Nível 2 · Ativo')).toBeOnTheScreen();
     expect(screen.getByText('650 XP')).toBeOnTheScreen();
-    expect(
-      screen.getByRole('progressbar', { name: 'Progresso do nível' }),
-    ).toHaveAccessibilityValue({ now: 10 });
+    const anel = screen.getByRole('progressbar', { name: 'Progresso do nível' });
+    expect(anel).toHaveAccessibilityValue({ now: 10 });
+    expect(within(anel).getByText('10%')).toBeOnTheScreen();
     expect(screen.getByText('Faltam 1350 XP para Focado')).toBeOnTheScreen();
   });
 
@@ -142,9 +142,11 @@ describe('tela Progresso', () => {
     historico({ sessions: treinos(10) });
     await renderRouter(rotas, { initialUrl: '/' });
 
-    expect(await screen.findByText('10 dias seguidos')).toBeOnTheScreen();
-    expect(screen.getByText('Recorde: 10 dias')).toBeOnTheScreen();
-    expect(screen.getByText('10 treinos completos')).toBeOnTheScreen();
+    expect(
+      await screen.findByLabelText('Sequência atual: 10 dias'),
+    ).toBeOnTheScreen();
+    expect(screen.getByLabelText('Recorde: 10 dias')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Treinos completos: 10')).toBeOnTheScreen();
   });
 
   it('no começo: Iniciante, sem sequência e todas as conquistas bloqueadas', async () => {
@@ -152,9 +154,9 @@ describe('tela Progresso', () => {
     await renderRouter(rotas, { initialUrl: '/' });
 
     expect(await screen.findByText('Nível 1 · Iniciante')).toBeOnTheScreen();
-    expect(screen.getByText('0 dias seguidos')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Sequência atual: 0 dias')).toBeOnTheScreen();
     expect(screen.getByText('Conquistas 0/8')).toBeOnTheScreen();
-    expect(screen.getAllByText('Bloqueada')).toHaveLength(8);
+    expect(screen.getAllByLabelText(/Bloqueada\./)).toHaveLength(8);
   });
 
   it('no nível máximo, avisa que não há próximo', async () => {
@@ -180,10 +182,39 @@ describe('tela Progresso', () => {
     expect(await screen.findByText('Conquistas 1/8')).toBeOnTheScreen();
     expect(
       screen.getByLabelText(
-        'Primeiro treino, desbloqueada em 20/11. Conclua um treino completo',
+        'Primeiro treino. Desbloqueada em 20/11. Conclua um treino completo',
       ),
     ).toBeOnTheScreen();
-    expect(screen.getAllByText('Bloqueada')).toHaveLength(7);
+    expect(screen.getAllByLabelText(/Bloqueada\./)).toHaveLength(7);
+  });
+
+  it('conquista bloqueada é anunciada como bloqueada, com o que falta', async () => {
+    historico();
+    await renderRouter(rotas, { initialUrl: '/' });
+
+    const bloqueada = await screen.findByLabelText(
+      '10 treinos. Bloqueada. Para desbloquear: Conclua 10 treinos completos',
+    );
+    expect(bloqueada).toBeDisabled();
+    expect(
+      within(bloqueada).getByTestId('icone-lock-closed', {
+        includeHiddenElements: true,
+      }),
+    ).toBeOnTheScreen();
+  });
+
+  it('conquista desbloqueada fica colorida, com troféu', async () => {
+    historico({
+      sessions: treinos(1),
+      achievements: [{ code: 'first', unlockedAt: '2026-11-20T15:05:00.000Z' }],
+    });
+    await renderRouter(rotas, { initialUrl: '/' });
+
+    const feita = await screen.findByLabelText(/^Primeiro treino\. Desbloqueada/);
+    expect(feita).not.toBeDisabled();
+    expect(
+      within(feita).getByTestId('icone-trophy', { includeHiddenElements: true }),
+    ).toBeOnTheScreen();
   });
 
   it('busca de novo ao voltar para a aba, e a conquista nova aparece', async () => {
@@ -225,7 +256,9 @@ describe('tela Progresso', () => {
     mocks.achievements.mockReturnValue(new Promise(() => {}));
     await renderRouter(rotas, { initialUrl: '/' });
 
-    expect(screen.getByText('Carregando progresso…')).toBeOnTheScreen();
+    expect(
+      screen.getAllByRole('progressbar', { name: 'Carregando' }).length,
+    ).toBeGreaterThan(0);
   });
 });
 

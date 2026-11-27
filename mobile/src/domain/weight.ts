@@ -1,4 +1,6 @@
 import { parseAmount } from './diet';
+import { formatNumber } from './format';
+import { addDays } from './streak';
 
 export type WeightEntry = { date: string; kg: number };
 export type ChartPoint = WeightEntry & { x: number; y: number };
@@ -54,4 +56,30 @@ export function chartPoints(
     y: box.padding + ((max - e.kg) / (max - min)) * innerH,
   }));
   return { points, min, max };
+}
+
+export type WeightRange = '30d' | '90d' | 'all';
+
+/** Primeiro dia do período, contando hoje; `all` não tem início. */
+export function rangeStart(today: string, range: WeightRange): string | undefined {
+  if (range === 'all') return undefined;
+  return addDays(today, range === '30d' ? -29 : -89);
+}
+
+export type WeightChange = {
+  delta: number;
+  text: string;
+  tone: 'loss' | 'gain' | 'flat';
+};
+
+/** Diferença entre o último e o primeiro registro (já ordenados), em décimos de kg. */
+export function weightChange(entries: WeightEntry[]): WeightChange {
+  const delta =
+    entries.length < 2
+      ? 0
+      : Math.round((entries[entries.length - 1].kg - entries[0].kg) * 10) / 10;
+  if (delta === 0) return { delta: 0, text: '0 kg', tone: 'flat' };
+  return delta < 0
+    ? { delta, text: `−${formatNumber(-delta)} kg`, tone: 'loss' }
+    : { delta, text: `+${formatNumber(delta)} kg`, tone: 'gain' };
 }

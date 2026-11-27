@@ -3,7 +3,16 @@ import { StyleSheet, Text, View } from 'react-native';
 import { fonts, space, type, useTheme } from '../theme';
 
 /** Número grande com o rótulo embaixo. */
-export function StatTile({ label, value }: { label: string; value: string }) {
+export function StatTile({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: string;
+  /** Cor do número; sem ela, a cor do texto. */
+  color?: string;
+}) {
   const theme = useTheme();
   return (
     <View
@@ -11,7 +20,7 @@ export function StatTile({ label, value }: { label: string; value: string }) {
       accessibilityLabel={`${label}: ${value}`}
       style={styles.tile}
     >
-      <Text style={[styles.value, { color: theme.ink }]}>{value}</Text>
+      <Text style={[styles.value, { color: color ?? theme.ink }]}>{value}</Text>
       <Text style={[styles.label, { color: theme.muted }]}>{label}</Text>
     </View>
   );
