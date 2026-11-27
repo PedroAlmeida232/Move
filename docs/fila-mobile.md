@@ -19,7 +19,7 @@ Direção visual: estilo Apple (fundo cinza-claro, cards brancos arredondados, a
 
 - [x] **D01** · [MOB] Tokens de design · `feature/design-tokens` · https://trello.com/c/riTAHfM3 · depende: —
 - [x] **D02** · [MOB] Componentes base · `feature/design-components` · https://trello.com/c/hheCnQds · depende: D01
-- [ ] **D03** · [MOB] Navegação com ícones · `feature/design-navigation` · https://trello.com/c/hweJK689 · depende: D02
+- [x] **D03** · [MOB] Navegação com ícones · `feature/design-navigation` · https://trello.com/c/hweJK689 · depende: D02
 - [ ] **D04** · [MOB] Tela Hoje · `feature/design-today` · https://trello.com/c/uyfxV5IU · depende: D03 e mockup aprovado pelo Pedro
 - [ ] **D05** · [MOB] Plano e treino · `feature/design-workout` · https://trello.com/c/kyO0eWzI · depende: D04
 - [ ] **D06** · [MOB] Dieta · `feature/design-diet` · https://trello.com/c/C96e4Sel · depende: D04
