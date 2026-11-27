@@ -149,6 +149,21 @@ describe('lastLoads', () => {
     ).toEqual({ e1: { kg: 15, reps: 9 } });
   });
 
+  it('série mais leve depois da mais pesada não troca a escolhida', () => {
+    expect(
+      lastLoads([treino('2026-11-17T12:00:00Z', [serie('e1', 20, 5), serie('e1', 15, 12)])]),
+    ).toEqual({ e1: { kg: 20, reps: 5 } });
+  });
+
+  it('repetições em branco contam como zero no desempate', () => {
+    expect(
+      lastLoads([treino('2026-11-17T12:00:00Z', [serie('e1', 15, null), serie('e1', 15, 8)])]),
+    ).toEqual({ e1: { kg: 15, reps: 8 } });
+    expect(
+      lastLoads([treino('2026-11-17T12:00:00Z', [serie('e1', 15, 8), serie('e1', 15, null)])]),
+    ).toEqual({ e1: { kg: 15, reps: 8 } });
+  });
+
   it('ignora treinos não concluídos, séries sem carga e séries não feitas', () => {
     expect(
       lastLoads([
