@@ -26,4 +26,4 @@ Direção visual: estilo Apple (fundo cinza-claro, cards brancos arredondados, a
 - [x] **D07** · [MOB] Peso · `feature/design-weight` · https://trello.com/c/IGcJDJh1 · depende: D06
 - [x] **D08** · [MOB] Progresso e conquistas · `feature/design-progress` · https://trello.com/c/Op4JUnop · depende: D04
 - [x] **D09** · [MOB] Login e Ajustes · `feature/design-auth-settings` · https://trello.com/c/syvwRNMq · depende: D02
-- [ ] **D10** · [MOB] Polimento e acessibilidade · `feature/design-polish` · https://trello.com/c/Ae9yVBB8 · depende: D04 a D09
+- [x] **D10** · [MOB] Polimento e acessibilidade · `feature/design-polish` · https://trello.com/c/Ae9yVBB8 · depende: D04 a D09
