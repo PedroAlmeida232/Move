@@ -1,3 +1,5 @@
+import { formatNumber } from './format';
+
 export type SetEntry = { kg: string; reps: string; done: boolean };
 export type ExerciseSets = { exerciseId: string; sets: SetEntry[] };
 export type SetPayload = {
@@ -64,4 +66,47 @@ export function restWeekdays(
   );
   if (training.size === 0) return [];
   return [0, 1, 2, 3, 4, 5, 6].filter((weekday) => !training.has(weekday));
+}
+
+export type LastLoad = { kg: number; reps: number | null };
+
+/**
+ * Carga da última vez de cada exercício: a série feita mais pesada (empate: mais repetições)
+ * do treino concluído mais recente que tem carga para aquele exercício.
+ */
+export function lastLoads(
+  sessions: { performedAt: string; finished: boolean; sets: SetPayload[] }[],
+): Record<string, LastLoad> {
+  const newestFirst = sessions
+    .filter((s) => s.finished)
+    .sort((a, b) => b.performedAt.localeCompare(a.performedAt));
+  const result: Record<string, LastLoad> = {};
+  const decided = new Set<string>();
+  for (const session of newestFirst) {
+    const here = new Set<string>();
+    for (const set of session.sets) {
+      if (!set.done || set.kg === null || decided.has(set.exerciseId)) continue;
+      here.add(set.exerciseId);
+      const best = result[set.exerciseId];
+      const heavier =
+        !best ||
+        set.kg > best.kg ||
+        (set.kg === best.kg && (set.reps ?? 0) > (best.reps ?? 0));
+      if (heavier) result[set.exerciseId] = { kg: set.kg, reps: set.reps };
+    }
+    here.forEach((id) => decided.add(id));
+  }
+  return result;
+}
+
+export function formatLastLoad({ kg, reps }: LastLoad): string {
+  const load = `${formatNumber(kg)} kg`;
+  return reps === null ? load : `${load} × ${reps}`;
+}
+
+/** Segundos como `m:ss`. */
+export function formatClock(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
 }

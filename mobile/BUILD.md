@@ -38,3 +38,19 @@ eas submit -p ios --latest                # envia ao TestFlight
 ## Aceite (manual)
 
 Instale pelo TestFlight, crie uma conta, entre com e-mail, Apple e Google, e conclua um treino. Precisa da API publicada (B13).
+
+## Atualizações sem nova revisão (EAS Update)
+
+O app tem o `expo-updates`. Cada perfil de build escuta um canal com o mesmo nome (`development`, `preview`, `production`). Ao abrir, o app procura uma atualização; se ela demorar, abre com o que já tem e usa a novidade na próxima vez.
+
+**Dá para mandar por `eas update`** (minutos, sem a Apple): mudança só em TypeScript, telas, textos, estilos e imagens do app.
+
+```sh
+eas update --channel production --message "corrige o total da dieta"
+```
+
+Teste antes no canal `preview`, com um build do perfil `preview` instalado.
+
+**Precisa de build novo** (e nova revisão): pacote nativo novo ou atualizado, plugin ou permissão no `app.config.ts`, ícone ou splash, versão do Expo. Nesses casos, suba o `version` no `app.config.ts` (por exemplo, `1.0.0` → `1.1.0`). O `runtimeVersion` segue a versão, então uma atualização nunca chega a um app com código nativo diferente.
+
+**Atenção:** o primeiro build de produção já precisa sair com o `expo-updates`. Um app instalado sem ele não recebe atualizações.

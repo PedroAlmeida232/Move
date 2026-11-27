@@ -7,6 +7,8 @@ const firebaseIos =
 const firebaseAndroid =
   process.env.GOOGLE_SERVICES_JSON ?? './google-services.json';
 
+const PROJECT_ID = '33aadfd9-8ada-44e7-9efb-ed102eb23f28';
+
 const config: ExpoConfig = {
   name: 'Move',
   slug: 'move',
@@ -14,6 +16,15 @@ const config: ExpoConfig = {
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
+  // Atualizações da parte JavaScript pelo EAS Update, sem nova revisão da Apple.
+  // O runtime segue a versão: mudou código nativo ou plugin, suba a versão e gere um build novo.
+  runtimeVersion: { policy: 'appVersion' },
+  updates: {
+    url: `https://u.expo.dev/${PROJECT_ID}`,
+    checkAutomatically: 'ON_LOAD',
+    // Se o download demorar, abre com o que já tem e usa a novidade na próxima abertura.
+    fallbackToCacheTimeout: 0,
+  },
   scheme: 'move',
   ios: {
     supportsTablet: false,
@@ -39,7 +50,7 @@ const config: ExpoConfig = {
   web: {
     favicon: './assets/favicon.png',
   },
-  extra: { eas: { projectId: '33aadfd9-8ada-44e7-9efb-ed102eb23f28' } },
+  extra: { eas: { projectId: PROJECT_ID } },
   plugins: [
     'expo-router',
     'expo-apple-authentication',

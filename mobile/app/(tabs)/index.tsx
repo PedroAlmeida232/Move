@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { dayMissions, greeting } from '../../src/domain/today';
-import { weekdayOf } from '../../src/domain/workout';
+import { lastLoads, weekdayOf } from '../../src/domain/workout';
 import { LevelUp } from '../../src/features/progress/LevelUp';
 import {
   progressOf,
@@ -130,7 +130,16 @@ export default function Hoje() {
             onStart={started ? undefined : () => setStarted(true)}
           />
           {started ? (
-            <TodayWorkout key={day.weekday} day={day} onFinished={onFinished} />
+            <TodayWorkout
+              key={day.weekday}
+              day={day}
+              onFinished={onFinished}
+              lastLoads={
+                progress.state.status === 'ready'
+                  ? lastLoads(progress.state.data.sessions)
+                  : undefined
+              }
+            />
           ) : null}
         </>
       );

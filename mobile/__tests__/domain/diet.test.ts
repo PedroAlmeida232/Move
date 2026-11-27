@@ -2,6 +2,7 @@ import {
   dayTotals,
   goalPct,
   parseAmount,
+  recentMeals,
   validateMeal,
 } from '../../src/domain/diet';
 
@@ -100,5 +101,67 @@ describe('goalPct', () => {
 
   it('sem meta é 0', () => {
     expect(goalPct(500, 0)).toBe(0);
+  });
+});
+
+describe('recentMeals', () => {
+  const meal = (date: string, name: string, kcal = 100) => ({
+    id: `${date}-${name}`,
+    date,
+    name,
+    kcal,
+    protein: 10,
+    carbs: 5,
+    fat: 2,
+  });
+
+  it('mais recentes primeiro, só com os valores da refeição', () => {
+    expect(
+      recentMeals([meal('2026-11-20', 'Almoço'), meal('2026-11-22', 'Jantar', 600)]),
+    ).toEqual([
+      { name: 'Jantar', kcal: 600, protein: 10, carbs: 5, fat: 2 },
+      { name: 'Almoço', kcal: 100, protein: 10, carbs: 5, fat: 2 },
+    ]);
+  });
+
+  it('repetidas pelo nome (maiúsculas e espaços não importam) ficam só com a mais recente', () => {
+    const lista = recentMeals([
+      meal('2026-11-20', 'Pão com ovo', 300),
+      meal('2026-11-21', '  pão  COM ovo ', 350),
+      meal('2026-11-19', 'Pão com ovo', 280),
+    ]);
+    expect(lista).toHaveLength(1);
+    expect(lista[0]).toMatchObject({ name: 'pão  COM ovo', kcal: 350 });
+  });
+
+  it('no mesmo dia, vale a registrada por último', () => {
+    const lista = recentMeals([
+      meal('2026-11-21', 'Lanche', 200),
+      meal('2026-11-21', 'lanche', 250),
+    ]);
+    expect(lista).toEqual([
+      { name: 'lanche', kcal: 250, protein: 10, carbs: 5, fat: 2 },
+    ]);
+  });
+
+  it('refeições diferentes no mesmo dia: a registrada por último vem antes', () => {
+    const lista = recentMeals([
+      meal('2026-11-21', 'Café'),
+      meal('2026-11-21', 'Almoço'),
+    ]);
+    expect(lista.map((m) => m.name)).toEqual(['Almoço', 'Café']);
+  });
+
+  it('limita a 8 por padrão, ou ao limite pedido', () => {
+    const muitas = Array.from({ length: 12 }, (_, i) =>
+      meal(`2026-11-${String(10 + i).padStart(2, '0')}`, `R${i}`),
+    );
+    expect(recentMeals(muitas)).toHaveLength(8);
+    expect(recentMeals(muitas)[0].name).toBe('R11');
+    expect(recentMeals(muitas, 3)).toHaveLength(3);
+  });
+
+  it('sem histórico, lista vazia', () => {
+    expect(recentMeals([])).toEqual([]);
   });
 });

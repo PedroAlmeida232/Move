@@ -108,6 +108,31 @@ describe('app.config', () => {
   });
 });
 
+describe('atualizações sem passar pela revisão (expo-updates)', () => {
+  it('o runtime segue a versão do app e as atualizações vêm do EAS', () => {
+    const config = carregarConfig();
+    expect(config.runtimeVersion).toEqual({ policy: 'appVersion' });
+    expect(config.updates?.url).toBe(
+      'https://u.expo.dev/33aadfd9-8ada-44e7-9efb-ed102eb23f28',
+    );
+    expect(config.updates?.checkAutomatically).toBe('ON_LOAD');
+    // Se o download demorar, o app abre com o que já tem e usa a novidade na próxima vez.
+    expect(config.updates?.fallbackToCacheTimeout).toBe(0);
+  });
+
+  it('cada perfil do EAS publica e recebe num canal próprio', () => {
+    const { build } = lerJson('eas.json');
+    expect(build.development.channel).toBe('development');
+    expect(build.preview.channel).toBe('preview');
+    expect(build.production.channel).toBe('production');
+  });
+
+  it('tem o pacote expo-updates', () => {
+    const { dependencies } = lerJson('package.json');
+    expect(dependencies['expo-updates']).toBeDefined();
+  });
+});
+
 describe('eas.json', () => {
   it('tem os perfis development, preview e production', () => {
     const eas = lerJson('eas.json');
