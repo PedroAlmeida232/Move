@@ -112,7 +112,7 @@ describe('weightChange', () => {
 describe('rangeStart', () => {
   it('30 e 90 dias contam hoje; tudo não tem início', () => {
     expect(rangeStart('2026-11-30', '30d')).toBe('2026-11-01');
-    expect(rangeStart('2026-11-30', '90d')).toBe('2026-09-01');
+    expect(rangeStart('2026-11-30', '90d')).toBe('2026-09-02');
     expect(rangeStart('2026-11-30', 'all')).toBeUndefined();
   });
 });
