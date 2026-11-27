@@ -8,19 +8,25 @@ export function Button({
   variant = 'primary',
   loading = false,
   disabled = false,
+  danger = false,
 }: {
   title: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary' | 'text';
   loading?: boolean;
   disabled?: boolean;
+  /** Ação destrutiva (ex.: excluir a conta): vermelho no lugar do azul. */
+  danger?: boolean;
 }) {
   const theme = useTheme();
   const blocked = loading || disabled;
   const { color, backgroundColor } = {
-    primary: { color: theme.onBlue, backgroundColor: theme.action },
-    secondary: { color: theme.ink, backgroundColor: theme.fill },
-    text: { color: theme.blue, backgroundColor: undefined },
+    primary: {
+      color: theme.onBlue,
+      backgroundColor: danger ? theme.dangerAction : theme.action,
+    },
+    secondary: { color: danger ? theme.danger : theme.ink, backgroundColor: theme.fill },
+    text: { color: danger ? theme.danger : theme.blue, backgroundColor: undefined },
   }[variant];
   return (
     <Pressable

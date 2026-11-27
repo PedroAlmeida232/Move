@@ -1,6 +1,7 @@
 import { type Ref } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,7 +12,9 @@ import {
   type TextInputProps,
 } from 'react-native';
 
-import { fonts, useTheme } from './theme';
+import { fonts, radius, space, useTheme } from './theme';
+
+const LOGO = require('../../assets/move-logo.png');
 
 export function AuthScreen({
   title,
@@ -29,6 +32,13 @@ export function AuthScreen({
       contentContainerStyle={styles.screen}
       keyboardShouldPersistTaps="handled"
     >
+      <Image
+        source={LOGO}
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel="Move"
+        style={styles.logo}
+      />
       <Text
         accessibilityRole="header"
         style={[styles.title, { color: theme.ink }]}
@@ -153,6 +163,12 @@ export function TextLink({
 
 const styles = StyleSheet.create({
   screen: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 8 },
+  logo: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.lg,
+    marginBottom: space.lg,
+  },
   title: { fontFamily: fonts.native, fontSize: 34, fontWeight: '700' },
   subtitle: { fontFamily: fonts.native, fontSize: 16, marginBottom: 8 },
   form: { gap: 16, marginTop: 16 },

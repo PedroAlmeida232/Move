@@ -1,16 +1,35 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { deleteAccount } from '../src/features/account/api';
 import { useAuth } from '../src/lib/auth';
-import { fonts, useTheme } from '../src/lib/theme';
-import { ErrorText, PrimaryButton } from '../src/lib/ui';
+import { POLICY_URL } from '../src/lib/links';
+import { fonts, space, type, useTheme } from '../src/lib/theme';
+import { ErrorText } from '../src/lib/ui';
+import { Button } from '../src/lib/ui/Button';
+import { Card } from '../src/lib/ui/Card';
+import { ListRow } from '../src/lib/ui/ListRow';
 
 type Exclusao = 'fechada' | 'confirmando' | 'excluindo' | 'erro';
 
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const theme = useTheme();
+  return (
+    <View style={styles.section}>
+      <Text
+        accessibilityRole="header"
+        style={[styles.sectionTitle, { color: theme.muted }]}
+      >
+        {title}
+      </Text>
+      <Card>{children}</Card>
+    </View>
+  );
+}
+
 export default function Ajustes() {
   const theme = useTheme();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const [exclusao, setExclusao] = useState<Exclusao>('fechada');
   const excluindo = exclusao === 'excluindo';
 
@@ -31,29 +50,38 @@ export default function Ajustes() {
       style={{ backgroundColor: theme.bg }}
       contentContainerStyle={styles.screen}
     >
-      <View style={[styles.card, { backgroundColor: theme.card }]}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Sair"
-          onPress={signOut}
-          style={styles.row}
-        >
-          <Text style={[styles.rowText, { color: theme.blue }]}>Sair</Text>
-        </Pressable>
-      </View>
+      <Section title="Conta">
+        {user?.email ? (
+          <ListRow icon="person-circle-outline" title="E-mail" value={user.email} />
+        ) : null}
+        <Button title="Sair" variant="text" onPress={signOut} />
+      </Section>
 
-      <View style={[styles.card, { backgroundColor: theme.card }]}>
+      <Section title="Aparência">
+        <ListRow
+          icon="contrast-outline"
+          title="Aparência"
+          subtitle="Automática"
+          value="segue o iPhone"
+        />
+      </Section>
+
+      <Section title="Privacidade">
+        <ListRow
+          icon="shield-checkmark-outline"
+          title="Política de privacidade"
+          onPress={() => Linking.openURL(POLICY_URL)}
+        />
+      </Section>
+
+      <Card>
         {exclusao === 'fechada' ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Excluir conta"
+          <Button
+            title="Excluir conta"
+            variant="text"
+            danger
             onPress={() => setExclusao('confirmando')}
-            style={styles.row}
-          >
-            <Text style={[styles.rowText, { color: theme.danger }]}>
-              Excluir conta
-            </Text>
-          </Pressable>
+          />
         ) : (
           <View style={styles.confirm}>
             <Text style={[styles.text, { color: theme.ink }]}>
@@ -65,36 +93,34 @@ export default function Ajustes() {
                 Não foi possível excluir a conta. Tente de novo.
               </ErrorText>
             ) : null}
-            <PrimaryButton
+            <Button
               title="Excluir definitivamente"
               onPress={excluir}
-              busy={excluindo}
+              loading={excluindo}
               danger
             />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Cancelar"
-              accessibilityState={{ disabled: excluindo }}
+            <Button
+              title="Cancelar"
+              variant="text"
               disabled={excluindo}
               onPress={() => setExclusao('fechada')}
-              style={styles.row}
-            >
-              <Text style={[styles.rowText, { color: theme.blue }]}>
-                Cancelar
-              </Text>
-            </Pressable>
+            />
           </View>
         )}
-      </View>
+      </Card>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 20, gap: 16 },
-  card: { borderRadius: 14, paddingHorizontal: 16, paddingVertical: 4 },
-  row: { minHeight: 48, justifyContent: 'center', alignItems: 'center' },
-  rowText: { fontFamily: fonts.native, fontSize: 17 },
-  confirm: { gap: 12, paddingVertical: 12 },
-  text: { fontFamily: fonts.native, fontSize: 16, lineHeight: 22 },
+  screen: { padding: space.lg, gap: space.xl },
+  section: { gap: space.sm },
+  sectionTitle: {
+    fontFamily: fonts.native,
+    ...type.caption,
+    textTransform: 'uppercase',
+    paddingHorizontal: space.lg,
+  },
+  confirm: { gap: space.md },
+  text: { fontFamily: fonts.native, ...type.body },
 });
