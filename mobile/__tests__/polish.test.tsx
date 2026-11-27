@@ -1,6 +1,5 @@
 import { act, render, screen } from '@testing-library/react-native';
 import { AccessibilityInfo, Text } from 'react-native';
-import * as RN from 'react-native';
 
 import { Card } from '../src/lib/ui/Card';
 import { ProgressRing } from '../src/lib/ui/ProgressRing';
@@ -13,14 +12,20 @@ function reduzirMovimento(ligado: boolean) {
     .mockResolvedValue(ligado);
 }
 
+// O tamanho de texto escolhido no iPhone chega como fontScale.
+jest.mock('react-native/Libraries/Utilities/useWindowDimensions', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+const mockDimensions = jest.requireMock(
+  'react-native/Libraries/Utilities/useWindowDimensions',
+).default as jest.Mock;
+
 function tamanhoDaFonte(fontScale: number) {
-  jest.spyOn(RN, 'useWindowDimensions').mockReturnValue({
-    width: 390,
-    height: 844,
-    scale: 3,
-    fontScale,
-  });
+  mockDimensions.mockReturnValue({ width: 390, height: 844, scale: 3, fontScale });
 }
+
+beforeEach(() => tamanhoDaFonte(1));
 
 afterEach(() => {
   jest.restoreAllMocks();
