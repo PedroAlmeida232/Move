@@ -50,3 +50,12 @@ export async function enableReminders(kind: ReminderKind): Promise<boolean> {
   );
   return true;
 }
+
+/** Cancela todos os lembretes (ao sair ou excluir a conta). Falha aqui não impede a saída. */
+export async function disableAllReminders() {
+  try {
+    await Promise.all([disableReminders('treino'), disableReminders('peso')]);
+  } catch {
+    // O aparelho pode recusar; a sessão encerra mesmo assim.
+  }
+}

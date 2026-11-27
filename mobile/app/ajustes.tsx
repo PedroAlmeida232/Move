@@ -4,6 +4,7 @@ import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { deleteAccount } from '../src/features/account/api';
 import { exportMyData } from '../src/features/account/exportData';
 import {
+  disableAllReminders,
   disableReminders,
   enableReminders,
   enabledKinds,
@@ -86,6 +87,12 @@ export default function Ajustes() {
     }
   }
 
+  // Lembretes são do aparelho: não devem continuar para quem sair da conta.
+  async function sair() {
+    await disableAllReminders();
+    await signOut();
+  }
+
   async function excluir() {
     setExclusao('excluindo');
     try {
@@ -95,7 +102,7 @@ export default function Ajustes() {
       return;
     }
     // A conta já não existe: encerrar a sessão leva de volta ao login.
-    await signOut();
+    await sair();
   }
 
   return (
@@ -107,7 +114,7 @@ export default function Ajustes() {
         {user?.email ? (
           <ListRow icon="person-circle-outline" title="E-mail" value={user.email} />
         ) : null}
-        <Button title="Sair" variant="text" onPress={signOut} />
+        <Button title="Sair" variant="text" onPress={sair} />
       </Section>
 
       <Section title="Lembretes">
