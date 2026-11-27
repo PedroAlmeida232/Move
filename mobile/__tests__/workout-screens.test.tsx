@@ -3,6 +3,7 @@ import { render, screen, userEvent } from '@testing-library/react-native';
 import Hoje from '../app/(tabs)/index';
 import Plano from '../app/(tabs)/plano';
 import { getPlan, postWorkout, type Plan } from '../src/features/workout/api';
+import { renderScreen } from '../test-utils/renderScreen';
 
 // O histórico do progresso (usado na celebração) não é o foco aqui: falha em silêncio.
 jest.mock('../src/lib/api', () => ({ apiFetch: jest.fn() }));
@@ -65,9 +66,11 @@ afterEach(() => jest.useRealTimers());
 describe('tela Hoje', () => {
   it('mostra o treino do dia da semana atual', async () => {
     mockGetPlan.mockResolvedValue(plano);
-    await render(<Hoje />);
+    const user = userEvent.setup();
+    await renderScreen(<Hoje />);
 
     expect(await screen.findByText('Costas e postura')).toBeOnTheScreen();
+    await user.press(screen.getByRole('button', { name: 'Começar treino' }));
     expect(screen.getByText('Serrote')).toBeOnTheScreen();
     expect(screen.getByText('Face pull')).toBeOnTheScreen();
     expect(screen.queryByText('Supino com halteres')).not.toBeOnTheScreen();
@@ -76,16 +79,18 @@ describe('tela Hoje', () => {
 
   it('mostra o estado de carregando enquanto busca o plano', async () => {
     mockGetPlan.mockReturnValue(new Promise(() => {}));
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
-    expect(screen.getByText('Carregando treino…')).toBeOnTheScreen();
+    expect(
+      screen.getAllByRole('progressbar', { name: 'Carregando' }).length,
+    ).toBeGreaterThan(0);
   });
 
   it('mostra dia livre quando o dia de hoje não tem exercícios', async () => {
     mockGetPlan.mockResolvedValue({ days: [plano.days[1]] });
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
-    expect(await screen.findByText('Dia livre')).toBeOnTheScreen();
+    expect(await screen.findByText('Dia de descanso')).toBeOnTheScreen();
     expect(
       screen.queryByRole('button', { name: 'Concluir treino' }),
     ).not.toBeOnTheScreen();
@@ -93,7 +98,7 @@ describe('tela Hoje', () => {
 
   it('mostra o estado vazio quando o usuário ainda não tem plano', async () => {
     mockGetPlan.mockResolvedValue({ days: [] });
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(
       await screen.findByText('Você ainda não tem um plano de treino.'),
@@ -105,7 +110,7 @@ describe('tela Hoje', () => {
     mockGetPlan.mockRejectedValueOnce(new Error('Network request failed'));
     mockGetPlan.mockResolvedValue(plano);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     expect(
       await screen.findByText(
@@ -121,8 +126,9 @@ describe('tela Hoje', () => {
   it('marcar uma série atualiza o progresso do treino', async () => {
     mockGetPlan.mockResolvedValue(plano);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
     await screen.findByText('Costas e postura');
+    await user.press(screen.getByRole('button', { name: 'Começar treino' }));
 
     await user.press(
       screen.getByRole('checkbox', { name: 'Concluir série 1 de Serrote' }),
@@ -146,8 +152,9 @@ describe('tela Hoje', () => {
   it('só permite concluir o treino quando todas as séries estão feitas', async () => {
     mockGetPlan.mockResolvedValue(plano);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
     await screen.findByText('Costas e postura');
+    await user.press(screen.getByRole('button', { name: 'Começar treino' }));
 
     expect(
       screen.getByRole('button', { name: 'Concluir treino' }),
@@ -185,8 +192,9 @@ describe('tela Hoje', () => {
     mockGetPlan.mockResolvedValue(plano);
     mockPostWorkout.mockResolvedValue(undefined);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
     await screen.findByText('Costas e postura');
+    await user.press(screen.getByRole('button', { name: 'Começar treino' }));
 
     await fazerTudo(user);
     await user.press(screen.getByRole('button', { name: 'Concluir treino' }));
@@ -213,8 +221,9 @@ describe('tela Hoje', () => {
     mockPostWorkout.mockRejectedValueOnce(new Error('Network request failed'));
     mockPostWorkout.mockResolvedValueOnce(undefined);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
     await screen.findByText('Costas e postura');
+    await user.press(screen.getByRole('button', { name: 'Começar treino' }));
 
     await fazerTudo(user);
     await user.press(screen.getByRole('button', { name: 'Concluir treino' }));

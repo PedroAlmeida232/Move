@@ -129,6 +129,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+/** Nome do perfil do Firebase; `null` sem sessão ou fora do AuthProvider. */
+export function useDisplayName(): string | null {
+  return useContext(AuthContext)?.user?.displayName ?? null;
+}
+
 export function useAuth(): AuthContextValue {
   const value = useContext(AuthContext);
   if (!value) throw new Error('useAuth deve ser usado dentro de AuthProvider');
