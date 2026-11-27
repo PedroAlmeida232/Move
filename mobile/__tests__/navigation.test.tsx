@@ -99,6 +99,8 @@ describe('abas', () => {
     await abrir('/plano');
     expect(screen.getByRole('button', { name: 'Plano' })).toBeSelected();
     expect(screen.getByRole('button', { name: 'Hoje' })).not.toBeSelected();
+    expect(screen.getByTestId('icone-barbell', { includeHiddenElements: true })).toBeOnTheScreen();
+    expect(screen.getByTestId('icone-today-outline', { includeHiddenElements: true })).toBeOnTheScreen();
   });
 
   it('cada aba tem ícone de contorno quando inativa e preenchido quando ativa', () => {
