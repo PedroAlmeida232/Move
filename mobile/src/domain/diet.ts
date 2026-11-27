@@ -68,3 +68,32 @@ export function dayTotals(meals: Macros[]): Macros {
 export function goalPct(value: number, goal: number): number {
   return goal > 0 ? Math.min(100, Math.round((value / goal) * 100)) : 0;
 }
+
+const nameKey = (name: string) => name.trim().replace(/\s+/g, ' ').toLowerCase();
+
+/**
+ * Refeições para repetir: sem repetidas pelo nome (maiúsculas e espaços não importam),
+ * a ocorrência mais recente de cada uma, das mais novas para as mais antigas.
+ */
+export function recentMeals(
+  meals: (MealInput & { date: string })[],
+  limit = 8,
+): MealInput[] {
+  const latest = new Map<string, { meal: MealInput & { date: string }; order: number }>();
+  meals.forEach((meal, order) => {
+    const key = nameKey(meal.name);
+    const seen = latest.get(key);
+    // Mesmo dia: vale a registrada por último na lista.
+    if (!seen || meal.date >= seen.meal.date) latest.set(key, { meal, order });
+  });
+  return [...latest.values()]
+    .sort((a, b) => b.meal.date.localeCompare(a.meal.date) || b.order - a.order)
+    .slice(0, limit)
+    .map(({ meal }) => ({
+      name: meal.name.trim(),
+      kcal: meal.kcal,
+      protein: meal.protein,
+      carbs: meal.carbs,
+      fat: meal.fat,
+    }));
+}
