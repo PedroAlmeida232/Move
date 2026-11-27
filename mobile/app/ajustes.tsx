@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { deleteAccount } from '../src/features/account/api';
 import { exportMyData } from '../src/features/account/exportData';
@@ -9,10 +16,21 @@ import {
   enableReminders,
   enabledKinds,
 } from '../src/features/reminders/reminders';
-import { type ReminderKind } from '../src/domain/reminders';
+import {
+  REMINDER_HOURS,
+  TRAINING_HOUR,
+  type ReminderKind,
+} from '../src/domain/reminders';
 import { useAuth } from '../src/lib/auth';
 import { POLICY_URL } from '../src/lib/links';
-import { fonts, space, type, useTheme } from '../src/lib/theme';
+import {
+  fonts,
+  radius,
+  space,
+  touchTarget,
+  type,
+  useTheme,
+} from '../src/lib/theme';
 import { todayKey } from '../src/lib/time';
 import { ErrorText } from '../src/lib/ui';
 import { Button } from '../src/lib/ui/Button';
@@ -23,7 +41,13 @@ import { SwitchRow } from '../src/lib/ui/SwitchRow';
 type Exclusao = 'fechada' | 'confirmando' | 'excluindo' | 'erro';
 type Exportacao = 'parada' | 'preparando' | 'pronta' | 'erro';
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   const theme = useTheme();
   return (
     <View style={styles.section}>
@@ -48,23 +72,29 @@ export default function Ajustes() {
     treino: false,
     peso: false,
   });
+  const [hora, setHora] = useState(TRAINING_HOUR);
   const [mudando, setMudando] = useState<ReminderKind | null>(null);
   const [semPermissao, setSemPermissao] = useState(false);
 
   useEffect(() => {
     let ativo = true;
-    enabledKinds().then((agora) => ativo && setLembretes(agora));
+    enabledKinds().then((agora) => {
+      if (!ativo) return;
+      setLembretes({ treino: agora.treino, peso: agora.peso });
+      setHora(agora.trainingHour);
+    });
     return () => {
       ativo = false;
     };
   }, []);
 
-  async function alternar(kind: ReminderKind, ligar: boolean) {
+  async function alternar(kind: ReminderKind, ligar: boolean, novaHora = hora) {
     setMudando(kind);
     setSemPermissao(false);
     try {
       if (ligar) {
-        const ok = await enableReminders(kind);
+        const ok = await enableReminders(kind, novaHora);
+        if (ok) setHora(novaHora);
         if (!ok) setSemPermissao(true);
         setLembretes((l) => ({ ...l, [kind]: ok }));
       } else {
@@ -112,7 +142,11 @@ export default function Ajustes() {
     >
       <Section title="Conta">
         {user?.email ? (
-          <ListRow icon="person-circle-outline" title="E-mail" value={user.email} />
+          <ListRow
+            icon="person-circle-outline"
+            title="E-mail"
+            value={user.email}
+          />
         ) : null}
         <Button title="Sair" variant="text" onPress={sair} />
       </Section>
@@ -121,11 +155,41 @@ export default function Ajustes() {
         <SwitchRow
           icon="barbell-outline"
           title="Lembrar do treino"
-          subtitle="Nos dias do plano, às 18h"
+          subtitle={`Nos dias do plano, às ${hora}h`}
           value={lembretes.treino}
           disabled={mudando !== null}
           onChange={(v) => alternar('treino', v)}
         />
+        {lembretes.treino ? (
+          <View style={styles.hours}>
+            {REMINDER_HOURS.map((h) => (
+              <Pressable
+                key={h}
+                accessibilityRole="button"
+                accessibilityLabel={`Treino às ${h}h`}
+                accessibilityState={{
+                  selected: h === hora,
+                  disabled: mudando !== null,
+                }}
+                disabled={mudando !== null}
+                onPress={() => h !== hora && alternar('treino', true, h)}
+                style={[
+                  styles.hour,
+                  { backgroundColor: h === hora ? theme.tint : theme.fill },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.hourText,
+                    { color: h === hora ? theme.blue : theme.ink },
+                  ]}
+                >
+                  {h}h
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
         <SwitchRow
           icon="scale-outline"
           title="Lembrar de se pesar"
@@ -136,7 +200,8 @@ export default function Ajustes() {
         />
         {semPermissao ? (
           <ErrorText>
-            Ative as notificações do Move nos Ajustes do iPhone para receber lembretes.
+            Ative as notificações do Move nos Ajustes do iPhone para receber
+            lembretes.
           </ErrorText>
         ) : null}
       </Section>
@@ -171,7 +236,9 @@ export default function Ajustes() {
           </Text>
         ) : null}
         {exportacao === 'erro' ? (
-          <ErrorText>Não foi possível exportar seus dados. Tente de novo.</ErrorText>
+          <ErrorText>
+            Não foi possível exportar seus dados. Tente de novo.
+          </ErrorText>
         ) : null}
       </Section>
 
@@ -223,6 +290,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
   },
   confirm: { gap: space.md },
+  hours: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
+  hour: {
+    minWidth: touchTarget,
+    minHeight: touchTarget,
+    paddingHorizontal: space.md,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hourText: { fontFamily: fonts.native, ...type.callout },
   caption: { fontFamily: fonts.native, ...type.caption },
   text: { fontFamily: fonts.native, ...type.body },
 });

@@ -15,10 +15,16 @@ type PlanLike = {
 };
 
 export const TRAINING_HOUR = 18;
+/** Horários oferecidos para o lembrete de treino. */
+export const REMINDER_HOURS = [6, 7, 12, 18, 20];
 export const WEIGHT_HOUR = 9;
 
 /** Lembretes de um tipo. Treino: nos dias do plano com exercícios. Peso: domingo de manhã. */
-export function reminderSchedule(kind: ReminderKind, plan: PlanLike): Reminder[] {
+export function reminderSchedule(
+  kind: ReminderKind,
+  plan: PlanLike,
+  trainingHour: number = TRAINING_HOUR,
+): Reminder[] {
   if (kind === 'peso') {
     return [
       {
@@ -38,7 +44,7 @@ export function reminderSchedule(kind: ReminderKind, plan: PlanLike): Reminder[]
       id: `treino-${d.weekday}`,
       // O plano usa 0 = domingo; o iPhone, 1 = domingo.
       weekday: d.weekday + 1,
-      hour: TRAINING_HOUR,
+      hour: trainingHour,
       minute: 0,
       title: 'Hora do treino',
       body: `Hoje tem ${d.name} no seu plano.`,
@@ -47,4 +53,12 @@ export function reminderSchedule(kind: ReminderKind, plan: PlanLike): Reminder[]
 
 export function isKind(id: string, kind: ReminderKind): boolean {
   return kind === 'peso' ? id === 'peso' : id.startsWith('treino-');
+}
+
+/** Hora de um lembrete já agendado: o iOS devolve o gatilho semanal como calendário. */
+export function hourFromTrigger(trigger: unknown): number | null {
+  if (!trigger || typeof trigger !== 'object') return null;
+  const t = trigger as { hour?: unknown; dateComponents?: { hour?: unknown } };
+  const hour = t.hour ?? t.dateComponents?.hour;
+  return typeof hour === 'number' ? hour : null;
 }
