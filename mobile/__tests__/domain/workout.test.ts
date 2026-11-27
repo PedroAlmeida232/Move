@@ -1,5 +1,8 @@
 import {
+  formatClock,
+  formatLastLoad,
   initialSets,
+  lastLoads,
   restWeekdays,
   setsToPayload,
   weekdayOf,
@@ -114,5 +117,74 @@ describe('restWeekdays', () => {
   it('sem plano (ou plano sem exercícios), nenhum dia é descanso', () => {
     expect(restWeekdays([])).toEqual([]);
     expect(restWeekdays([dia(2, 0)])).toEqual([]);
+  });
+});
+
+describe('lastLoads', () => {
+  const serie = (exerciseId: string, kg: number | null, reps: number | null, done = true) => ({
+    exerciseId,
+    setNumber: 1,
+    kg,
+    reps,
+    done,
+  });
+  const treino = (performedAt: string, sets: ReturnType<typeof serie>[], finished = true) => ({
+    performedAt,
+    finished,
+    sets,
+  });
+
+  it('por exercício, a série mais pesada do treino concluído mais recente', () => {
+    expect(
+      lastLoads([
+        treino('2026-11-10T12:00:00Z', [serie('e1', 20, 8)]),
+        treino('2026-11-17T12:00:00Z', [serie('e1', 12.5, 10), serie('e1', 15, 6)]),
+      ]),
+    ).toEqual({ e1: { kg: 15, reps: 6 } });
+  });
+
+  it('com a mesma carga, vale a série com mais repetições', () => {
+    expect(
+      lastLoads([treino('2026-11-17T12:00:00Z', [serie('e1', 15, 6), serie('e1', 15, 9)])]),
+    ).toEqual({ e1: { kg: 15, reps: 9 } });
+  });
+
+  it('ignora treinos não concluídos, séries sem carga e séries não feitas', () => {
+    expect(
+      lastLoads([
+        treino('2026-11-10T12:00:00Z', [serie('e1', 10, 10)]),
+        treino('2026-11-18T12:00:00Z', [serie('e1', 30, 5)], false),
+        treino('2026-11-17T12:00:00Z', [serie('e1', null, 12), serie('e1', 40, 3, false)]),
+      ]),
+    ).toEqual({ e1: { kg: 10, reps: 10 } });
+  });
+
+  it('cada exercício olha o seu último treino', () => {
+    expect(
+      lastLoads([
+        treino('2026-11-10T12:00:00Z', [serie('e1', 10, 10), serie('e2', 50, 5)]),
+        treino('2026-11-17T12:00:00Z', [serie('e1', 12, 10)]),
+      ]),
+    ).toEqual({ e1: { kg: 12, reps: 10 }, e2: { kg: 50, reps: 5 } });
+  });
+
+  it('sem histórico, vazio', () => {
+    expect(lastLoads([])).toEqual({});
+  });
+});
+
+describe('formatLastLoad', () => {
+  it('carga com vírgula e repetições quando houver', () => {
+    expect(formatLastLoad({ kg: 12.5, reps: 10 })).toBe('12,5 kg × 10');
+    expect(formatLastLoad({ kg: 20, reps: null })).toBe('20 kg');
+  });
+});
+
+describe('formatClock', () => {
+  it('minutos e segundos com dois dígitos', () => {
+    expect(formatClock(90)).toBe('1:30');
+    expect(formatClock(59)).toBe('0:59');
+    expect(formatClock(0)).toBe('0:00');
+    expect(formatClock(605)).toBe('10:05');
   });
 });

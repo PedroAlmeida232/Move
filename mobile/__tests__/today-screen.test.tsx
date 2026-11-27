@@ -150,6 +150,27 @@ describe('tela Hoje', () => {
     ).toBeOnTheScreen();
   });
 
+  it('no treino, mostra a carga da última vez vinda do histórico', async () => {
+    dados({
+      sessions: [
+        {
+          id: 's1',
+          performedAt: '2026-11-20T15:00:00.000Z',
+          finished: true,
+          sets: [{ exerciseId: 'e1', setNumber: 1, kg: 14, reps: 10, done: true }],
+        },
+      ],
+    });
+    const user = userEvent.setup();
+    await renderScreen(<Hoje />);
+    await screen.findByText('Costas e postura');
+    await screen.findByLabelText(/Sequência/);
+
+    await user.press(screen.getByRole('button', { name: 'Começar treino' }));
+
+    expect(screen.getByText('Da última vez: 14 kg × 10')).toBeOnTheScreen();
+  });
+
   it('com o treino de hoje já concluído, o card avisa', async () => {
     dados({ sessions: [treino('2026-11-27')] });
     await renderScreen(<Hoje />);
