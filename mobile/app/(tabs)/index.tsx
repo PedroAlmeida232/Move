@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { weekdayOf } from '../../src/domain/workout';
 import { LevelUp } from '../../src/features/progress/LevelUp';
@@ -15,6 +15,7 @@ import { usePlan } from '../../src/features/workout/usePlan';
 import { fonts, useTheme } from '../../src/lib/theme';
 import { todayKey } from '../../src/lib/time';
 import { LoadStatus } from '../../src/lib/ui';
+import { SettingsButton } from '../../src/lib/ui/SettingsButton';
 
 function Empty({ title, text }: { title: string; text: string }) {
   const theme = useTheme();
@@ -80,12 +81,15 @@ export default function Hoje() {
       style={{ backgroundColor: theme.bg }}
       contentContainerStyle={styles.screen}
     >
-      <Text
-        accessibilityRole="header"
-        style={[styles.title, { color: theme.ink }]}
-      >
-        Hoje
-      </Text>
+      <View style={styles.header}>
+        <Text
+          accessibilityRole="header"
+          style={[styles.title, { color: theme.ink }]}
+        >
+          Hoje
+        </Text>
+        <SettingsButton />
+      </View>
       {content}
       <LevelUp level={newLevel} onClose={() => setNewLevel(null)} />
     </ScrollView>
@@ -94,6 +98,11 @@ export default function Hoje() {
 
 const styles = StyleSheet.create({
   screen: { padding: 20, paddingTop: 64, gap: 16 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   title: { fontFamily: fonts.native, fontSize: 34, fontWeight: '700' },
   h2: { fontFamily: fonts.native, fontSize: 22, fontWeight: '700' },
   text: { fontFamily: fonts.native, fontSize: 16 },
