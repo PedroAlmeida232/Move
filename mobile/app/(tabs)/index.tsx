@@ -1,38 +1,53 @@
 import * as Haptics from 'expo-haptics';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
+import { dayMissions, greeting } from '../../src/domain/today';
 import { weekdayOf } from '../../src/domain/workout';
 import { LevelUp } from '../../src/features/progress/LevelUp';
 import {
   progressOf,
   useProgress,
   withSession,
+  type ProgressData,
 } from '../../src/features/progress/useProgress';
-import type { WorkoutInput } from '../../src/features/workout/api';
+import { MissionsCard } from '../../src/features/today/MissionsCard';
+import { SummaryCard } from '../../src/features/today/SummaryCard';
+import { WorkoutCard } from '../../src/features/today/WorkoutCard';
+import type { Plan, WorkoutInput } from '../../src/features/workout/api';
 import { TodayWorkout } from '../../src/features/workout/TodayWorkout';
 import { usePlan } from '../../src/features/workout/usePlan';
-import { fonts, useTheme } from '../../src/lib/theme';
-import { todayKey } from '../../src/lib/time';
-import { LoadStatus } from '../../src/lib/ui';
+import { useDisplayName } from '../../src/lib/auth';
+import { fonts, type, useTheme } from '../../src/lib/theme';
+import { deviceTimeZone, todayKey } from '../../src/lib/time';
+import { EmptyState } from '../../src/lib/ui/EmptyState';
+import { ErrorState } from '../../src/lib/ui/ErrorState';
+import { Screen } from '../../src/lib/ui/Screen';
+import { SettingsButton } from '../../src/lib/ui/SettingsButton';
+import { Skeleton } from '../../src/lib/ui/Skeleton';
 
-function Empty({ title, text }: { title: string; text: string }) {
-  const theme = useTheme();
-  return (
-    <>
-      <Text style={[styles.h2, { color: theme.ink }]}>{title}</Text>
-      <Text style={[styles.text, { color: theme.muted }]}>{text}</Text>
-    </>
-  );
+function missionsOf(data: ProgressData, plan: Plan, today: string) {
+  const day = plan.days.find((d) => d.weekday === weekdayOf(today));
+  return dayMissions({
+    today,
+    timeZone: deviceTimeZone(),
+    trainingDay: !!day && day.exercises.length > 0,
+    sessions: data.sessions,
+    meals: data.meals.meals,
+    weights: data.weights,
+    proteinGoal: data.meals.goals.protein,
+  });
 }
 
 export default function Hoje() {
   const theme = useTheme();
+  // O treino vem primeiro: é o que a pessoa veio fazer.
   const plan = usePlan();
-  const { state } = plan;
-  const [todayDate] = useState(todayKey);
-  const today = weekdayOf(todayDate);
   const progress = useProgress();
+  const name = useDisplayName();
+  const [todayDate] = useState(todayKey);
+  const [hour] = useState(() => new Date().getHours());
+  const [started, setStarted] = useState(false);
   const [newLevel, setNewLevel] = useState<string | null>(null);
 
   // Compara o nível antes e depois do treino salvo. Sem histórico carregado, não celebra.
@@ -48,53 +63,94 @@ export default function Hoje() {
     }
   }
 
-  let content = (
-    <LoadStatus
-      {...plan}
-      loadingText="Carregando treino…"
-      errorText="Não foi possível carregar o treino. Verifique sua conexão."
-    />
-  );
-  if (state.status === 'ready') {
-    const day = state.data.days.find((d) => d.weekday === today);
-    if (state.data.days.length === 0) {
-      content = (
-        <Empty
-          title="Sem plano"
-          text="Você ainda não tem um plano de treino."
+  // Resumo e missões: se o histórico falhar, somem sem atrapalhar o treino.
+  let summary = null;
+  let missionsList = null;
+  if (progress.state.status === 'loading') {
+    summary = <Skeleton height={152} />;
+  } else if (progress.state.status === 'ready' && plan.state.status === 'ready') {
+    const data = progress.state.data;
+    const missions = missionsOf(data, plan.state.data, todayDate);
+    const p = progressOf(data, todayDate);
+    summary = (
+      <SummaryCard missions={missions} streak={p.streak} level={p.level.name} />
+    );
+    missionsList = (
+      <>
+        <Text
+          accessibilityRole="header"
+          style={[styles.section, { color: theme.ink }]}
+        >
+          Missões do dia
+        </Text>
+        <MissionsCard missions={missions} />
+      </>
+    );
+  }
+
+  let workout = null;
+  if (plan.state.status === 'loading') {
+    workout = <Skeleton height={140} />;
+  } else if (plan.state.status === 'error') {
+    workout = (
+      <ErrorState
+        message="Não foi possível carregar o treino. Verifique sua conexão."
+        onRetry={plan.retry}
+      />
+    );
+  } else if (plan.state.data.days.length === 0) {
+    workout = (
+      <EmptyState
+        icon="barbell-outline"
+        title="Sem plano"
+        message="Você ainda não tem um plano de treino."
+      />
+    );
+  } else {
+    const day = plan.state.data.days.find(
+      (d) => d.weekday === weekdayOf(todayDate),
+    );
+    if (!day || day.exercises.length === 0) {
+      workout = (
+        <EmptyState
+          icon="moon-outline"
+          title="Dia de descanso"
+          message="Recuperar também faz parte do treino."
         />
       );
-    } else if (!day || day.exercises.length === 0) {
-      content = (
-        <Empty title="Dia livre" text="Recuperar também faz parte do treino." />
-      );
     } else {
-      content = (
-        <TodayWorkout key={day.weekday} day={day} onFinished={onFinished} />
+      const doneToday =
+        progress.state.status === 'ready' &&
+        missionsOf(progress.state.data, plan.state.data, todayDate)[0].done;
+      workout = (
+        <>
+          <WorkoutCard
+            day={day}
+            doneToday={doneToday}
+            onStart={started ? undefined : () => setStarted(true)}
+          />
+          {started ? (
+            <TodayWorkout key={day.weekday} day={day} onFinished={onFinished} />
+          ) : null}
+        </>
       );
     }
   }
 
   return (
-    <ScrollView
-      style={{ backgroundColor: theme.bg }}
-      contentContainerStyle={styles.screen}
-    >
-      <Text
-        accessibilityRole="header"
-        style={[styles.title, { color: theme.ink }]}
-      >
-        Hoje
+    <Screen title="Hoje" headerRight={<SettingsButton />}>
+      <Text style={[styles.greeting, { color: theme.muted }]}>
+        {greeting(hour, name)}
       </Text>
-      {content}
+      {summary}
+      {workout}
+      {missionsList}
       <LevelUp level={newLevel} onClose={() => setNewLevel(null)} />
-    </ScrollView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { padding: 20, paddingTop: 64, gap: 16 },
-  title: { fontFamily: fonts.native, fontSize: 34, fontWeight: '700' },
-  h2: { fontFamily: fonts.native, fontSize: 22, fontWeight: '700' },
-  text: { fontFamily: fonts.native, fontSize: 16 },
+  greeting: { fontFamily: fonts.native, ...type.headline },
+  section: { fontFamily: fonts.native, ...type.title },
 });

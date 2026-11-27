@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@testing-library/react-native';
+import { screen, userEvent } from '@testing-library/react-native';
 import * as Haptics from 'expo-haptics';
 import { Stack, Tabs } from 'expo-router';
 import { renderRouter, testRouter } from 'expo-router/testing-library';
@@ -11,9 +11,11 @@ import { getAchievements } from '../src/features/progress/api';
 import { getWeights } from '../src/features/weight/api';
 import { getPlan, getWorkouts, postWorkout } from '../src/features/workout/api';
 import { fakeToday } from '../test-utils/fakeToday';
+import { renderScreen } from '../test-utils/renderScreen';
 
 jest.mock('expo-haptics', () => ({
   notificationAsync: jest.fn(),
+  selectionAsync: jest.fn(),
   NotificationFeedbackType: { Success: 'success' },
 }));
 jest.mock('../src/features/workout/api', () => ({
@@ -229,7 +231,9 @@ describe('tela Progresso', () => {
 
 describe('celebração de nível na tela Hoje', () => {
   async function concluirTreino(user: ReturnType<typeof userEvent.setup>) {
-    await screen.findByText('Serrote');
+    await user.press(
+      await screen.findByRole('button', { name: 'Começar treino' }),
+    );
     for (const nome of ['Serrote', 'Face pull']) {
       for (const n of [1, 2]) {
         await user.press(
@@ -248,7 +252,7 @@ describe('celebração de nível na tela Hoje', () => {
     historico({ sessions: treinos(8, 19) });
     mocks.post.mockResolvedValue(undefined);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     await concluirTreino(user);
 
@@ -264,7 +268,7 @@ describe('celebração de nível na tela Hoje', () => {
     historico();
     mocks.post.mockResolvedValue(undefined);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     await concluirTreino(user);
 
@@ -278,7 +282,7 @@ describe('celebração de nível na tela Hoje', () => {
     mocks.workouts.mockRejectedValue(new Error('rede'));
     mocks.post.mockResolvedValue(undefined);
     const user = userEvent.setup();
-    await render(<Hoje />);
+    await renderScreen(<Hoje />);
 
     await concluirTreino(user);
 

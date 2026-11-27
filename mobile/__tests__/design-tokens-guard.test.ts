@@ -15,15 +15,12 @@ const PENDENTES = [
   'app/(auth)/entrar.tsx',
   'app/(auth)/recuperar-senha.tsx',
   'app/(tabs)/dieta.tsx',
-  'app/(tabs)/index.tsx',
   'app/(tabs)/peso.tsx',
-  'app/(tabs)/plano.tsx',
   'app/(tabs)/progresso.tsx',
   'app/ajustes.tsx',
   'src/features/auth/SocialButtons.tsx',
   'src/features/meal/GoalBar.tsx',
   'src/features/progress/LevelUp.tsx',
-  'src/features/workout/TodayWorkout.tsx',
 ];
 
 function sourceFiles(dir: string): string[] {
