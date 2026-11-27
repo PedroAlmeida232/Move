@@ -1,8 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { deleteAccount } from '../src/features/account/api';
 import { exportMyData } from '../src/features/account/exportData';
+import {
+  disableReminders,
+  enableReminders,
+  enabledKinds,
+} from '../src/features/reminders/reminders';
+import { type ReminderKind } from '../src/domain/reminders';
 import { useAuth } from '../src/lib/auth';
 import { POLICY_URL } from '../src/lib/links';
 import { fonts, space, type, useTheme } from '../src/lib/theme';
@@ -11,6 +17,7 @@ import { ErrorText } from '../src/lib/ui';
 import { Button } from '../src/lib/ui/Button';
 import { Card } from '../src/lib/ui/Card';
 import { ListRow } from '../src/lib/ui/ListRow';
+import { SwitchRow } from '../src/lib/ui/SwitchRow';
 
 type Exclusao = 'fechada' | 'confirmando' | 'excluindo' | 'erro';
 type Exportacao = 'parada' | 'preparando' | 'pronta' | 'erro';
@@ -36,6 +43,37 @@ export default function Ajustes() {
   const [exclusao, setExclusao] = useState<Exclusao>('fechada');
   const excluindo = exclusao === 'excluindo';
   const [exportacao, setExportacao] = useState<Exportacao>('parada');
+  const [lembretes, setLembretes] = useState<Record<ReminderKind, boolean>>({
+    treino: false,
+    peso: false,
+  });
+  const [mudando, setMudando] = useState<ReminderKind | null>(null);
+  const [semPermissao, setSemPermissao] = useState(false);
+
+  useEffect(() => {
+    let ativo = true;
+    enabledKinds().then((agora) => ativo && setLembretes(agora));
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  async function alternar(kind: ReminderKind, ligar: boolean) {
+    setMudando(kind);
+    setSemPermissao(false);
+    try {
+      if (ligar) {
+        const ok = await enableReminders(kind);
+        if (!ok) setSemPermissao(true);
+        setLembretes((l) => ({ ...l, [kind]: ok }));
+      } else {
+        await disableReminders(kind);
+        setLembretes((l) => ({ ...l, [kind]: false }));
+      }
+    } finally {
+      setMudando(null);
+    }
+  }
 
   async function exportar() {
     if (exportacao === 'preparando') return;
@@ -70,6 +108,30 @@ export default function Ajustes() {
           <ListRow icon="person-circle-outline" title="E-mail" value={user.email} />
         ) : null}
         <Button title="Sair" variant="text" onPress={signOut} />
+      </Section>
+
+      <Section title="Lembretes">
+        <SwitchRow
+          icon="barbell-outline"
+          title="Lembrar do treino"
+          subtitle="Nos dias do plano, às 18h"
+          value={lembretes.treino}
+          disabled={mudando !== null}
+          onChange={(v) => alternar('treino', v)}
+        />
+        <SwitchRow
+          icon="scale-outline"
+          title="Lembrar de se pesar"
+          subtitle="Aos domingos, às 9h"
+          value={lembretes.peso}
+          disabled={mudando !== null}
+          onChange={(v) => alternar('peso', v)}
+        />
+        {semPermissao ? (
+          <ErrorText>
+            Ative as notificações do Move nos Ajustes do iPhone para receber lembretes.
+          </ErrorText>
+        ) : null}
       </Section>
 
       <Section title="Aparência">

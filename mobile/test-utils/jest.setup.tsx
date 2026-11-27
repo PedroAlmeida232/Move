@@ -20,3 +20,12 @@ jest.mock('@react-native-firebase/auth', () => ({
   onAuthStateChanged: jest.fn(),
   signOut: jest.fn(),
 }));
+
+// Notificações locais: no Jest não há agendador. Os testes de lembretes trocam por mocks próprios.
+jest.mock('expo-notifications', () => ({
+  getAllScheduledNotificationsAsync: jest.fn(async () => []),
+  requestPermissionsAsync: jest.fn(async () => ({ granted: false })),
+  scheduleNotificationAsync: jest.fn(),
+  cancelScheduledNotificationAsync: jest.fn(),
+  SchedulableTriggerInputTypes: { WEEKLY: 'weekly' },
+}));
