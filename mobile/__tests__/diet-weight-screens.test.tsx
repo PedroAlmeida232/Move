@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@testing-library/react-native';
+import { screen, userEvent } from '@testing-library/react-native';
 
 import Dieta from '../app/(tabs)/dieta';
 import Peso from '../app/(tabs)/peso';
@@ -186,7 +186,7 @@ describe('tela Peso', () => {
 
   it('busca os últimos 90 dias e mostra o gráfico e o último peso', async () => {
     mockGetWeights.mockResolvedValue(registros);
-    await render(<Peso />);
+    await renderScreen(<Peso />);
 
     expect(
       await screen.findByRole('image', {
@@ -200,9 +200,11 @@ describe('tela Peso', () => {
   it('mostra carregando e o estado vazio', async () => {
     let responder: (v: unknown[]) => void = () => {};
     mockGetWeights.mockReturnValue(new Promise((r) => (responder = r)));
-    await render(<Peso />);
+    await renderScreen(<Peso />);
 
-    expect(screen.getByText('Carregando peso…')).toBeOnTheScreen();
+    expect(
+      screen.getAllByRole('progressbar', { name: 'Carregando' }).length,
+    ).toBeGreaterThan(0);
 
     responder([]);
     expect(
@@ -216,7 +218,7 @@ describe('tela Peso', () => {
       .mockRejectedValueOnce(new Error('rede'))
       .mockResolvedValueOnce(registros);
     const user = userEvent.setup();
-    await render(<Peso />);
+    await renderScreen(<Peso />);
 
     expect(
       await screen.findByText(
@@ -229,8 +231,9 @@ describe('tela Peso', () => {
   });
 
   async function registrar(user: User, texto: string) {
-    await user.type(screen.getByLabelText('Peso de hoje (kg)'), texto);
     await user.press(screen.getByRole('button', { name: 'Registrar peso' }));
+    await user.type(screen.getByLabelText('Peso de hoje (kg)'), texto);
+    await user.press(screen.getByRole('button', { name: 'Salvar peso' }));
   }
 
   it('registrar peso atualiza o gráfico', async () => {
@@ -241,7 +244,7 @@ describe('tela Peso', () => {
       waistCm: null,
     }));
     const user = userEvent.setup();
-    await render(<Peso />);
+    await renderScreen(<Peso />);
     await screen.findByText('81,2 kg');
 
     await registrar(user, '80,4');
@@ -266,7 +269,7 @@ describe('tela Peso', () => {
       waistCm: null,
     }));
     const user = userEvent.setup();
-    await render(<Peso />);
+    await renderScreen(<Peso />);
     await screen.findByText('80,9 kg');
 
     await registrar(user, '80,5');
@@ -286,7 +289,7 @@ describe('tela Peso', () => {
       waistCm: null,
     }));
     const user = userEvent.setup();
-    await render(<Peso />);
+    await renderScreen(<Peso />);
     await screen.findByText('Nenhum peso registrado ainda');
 
     await registrar(user, '83');
@@ -301,7 +304,7 @@ describe('tela Peso', () => {
   it('valida o peso (20 a 400 kg) e não chama a API', async () => {
     mockGetWeights.mockResolvedValue(registros);
     const user = userEvent.setup();
-    await render(<Peso />);
+    await renderScreen(<Peso />);
     await screen.findByText('81,2 kg');
 
     await registrar(user, '15');
@@ -316,7 +319,7 @@ describe('tela Peso', () => {
     mockGetWeights.mockResolvedValue(registros);
     mockPutWeight.mockRejectedValue(new Error('rede'));
     const user = userEvent.setup();
-    await render(<Peso />);
+    await renderScreen(<Peso />);
     await screen.findByText('81,2 kg');
 
     await registrar(user, '80');
