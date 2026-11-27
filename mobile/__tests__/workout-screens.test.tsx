@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@testing-library/react-native';
+import { screen, userEvent } from '@testing-library/react-native';
 
 import Hoje from '../app/(tabs)/index';
 import Plano from '../app/(tabs)/plano';

@@ -15,6 +15,7 @@ import { renderScreen } from '../test-utils/renderScreen';
 
 jest.mock('expo-haptics', () => ({
   notificationAsync: jest.fn(),
+  selectionAsync: jest.fn(),
   NotificationFeedbackType: { Success: 'success' },
 }));
 jest.mock('../src/features/workout/api', () => ({
