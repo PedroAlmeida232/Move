@@ -126,3 +126,45 @@ describe('lembretes ao sair da conta', () => {
     expect(signOut).toHaveBeenCalled();
   });
 });
+
+describe('horário do lembrete de treino', () => {
+  const agendado = (hour: number) => ({
+    identifier: 'treino-5',
+    trigger: { type: 'calendar', repeats: true, dateComponents: { weekday: 6, hour, minute: 0 } },
+  });
+
+  it('com o lembrete ligado, mostra os horários e marca o atual', async () => {
+    N.getAllScheduledNotificationsAsync.mockResolvedValue([agendado(20)]);
+    await renderScreen(<Ajustes />);
+
+    expect(await screen.findByRole('button', { name: 'Treino às 20h' })).toBeSelected();
+    expect(screen.getByRole('button', { name: 'Treino às 7h' })).not.toBeSelected();
+    expect(
+      screen.getByRole('switch', { name: 'Lembrar do treino' }).props.accessibilityHint,
+    ).toBe('Nos dias do plano, às 20h');
+  });
+
+  it('trocar o horário reagenda os lembretes de treino na nova hora', async () => {
+    N.getAllScheduledNotificationsAsync.mockResolvedValue([agendado(18)]);
+    const user = userEvent.setup();
+    await renderScreen(<Ajustes />);
+
+    await user.press(await screen.findByRole('button', { name: 'Treino às 7h' }));
+
+    expect(N.cancelScheduledNotificationAsync).toHaveBeenCalledWith('treino-5');
+    expect(N.scheduleNotificationAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        identifier: 'treino-5',
+        trigger: { type: 'weekly', weekday: 6, hour: 7, minute: 0 },
+      }),
+    );
+    expect(await screen.findByRole('button', { name: 'Treino às 7h' })).toBeSelected();
+  });
+
+  it('com o lembrete desligado, os horários não aparecem', async () => {
+    await renderScreen(<Ajustes />);
+    await screen.findByRole('switch', { name: 'Lembrar do treino' });
+
+    expect(screen.queryByRole('button', { name: 'Treino às 7h' })).not.toBeOnTheScreen();
+  });
+});
