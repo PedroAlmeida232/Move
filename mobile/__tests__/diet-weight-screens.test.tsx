@@ -5,6 +5,7 @@ import Peso from '../app/(tabs)/peso';
 import { getMeals, postMeal, type DayMeals } from '../src/features/meal/api';
 import { getWeights, putWeight } from '../src/features/weight/api';
 import { fakeToday } from '../test-utils/fakeToday';
+import { renderScreen } from '../test-utils/renderScreen';
 
 jest.mock('../src/features/meal/api', () => ({
   getMeals: jest.fn(),
@@ -46,9 +47,9 @@ describe('tela Dieta', () => {
 
   it('busca as refeições de hoje e mostra os totais e as barras de macros', async () => {
     mockGetMeals.mockResolvedValue(dia());
-    await render(<Dieta />);
+    await renderScreen(<Dieta />);
 
-    expect(await screen.findByText('500 / 2000 kcal')).toBeOnTheScreen();
+    expect(await screen.findByText('Faltam 1500 kcal')).toBeOnTheScreen();
     expect(mockGetMeals).toHaveBeenCalledWith(HOJE);
     expect(screen.getByText('35 / 140 g')).toBeOnTheScreen();
     expect(
@@ -62,19 +63,23 @@ describe('tela Dieta', () => {
       now: 25,
     });
     expect(screen.getByText('Almoço')).toBeOnTheScreen();
-    expect(screen.getByText('500 kcal · 35 g de proteína')).toBeOnTheScreen();
+    expect(
+      screen.getByLabelText('Almoço, 35 g de proteína, 500 kcal'),
+    ).toBeOnTheScreen();
   });
 
   it('mostra carregando, e o estado vazio sem refeições', async () => {
     let responder: (v: DayMeals) => void = () => {};
     mockGetMeals.mockReturnValue(new Promise((r) => (responder = r)));
-    await render(<Dieta />);
+    await renderScreen(<Dieta />);
 
-    expect(screen.getByText('Carregando refeições…')).toBeOnTheScreen();
+    expect(
+      screen.getAllByRole('progressbar', { name: 'Carregando' }).length,
+    ).toBeGreaterThan(0);
 
     responder(dia([]));
     expect(await screen.findByText('Nenhuma refeição ainda')).toBeOnTheScreen();
-    expect(screen.getByText('0 / 2000 kcal')).toBeOnTheScreen();
+    expect(screen.getByText('Faltam 2000 kcal')).toBeOnTheScreen();
   });
 
   it('erro ao carregar mostra mensagem e permite tentar de novo', async () => {
@@ -82,7 +87,7 @@ describe('tela Dieta', () => {
       .mockRejectedValueOnce(new Error('rede'))
       .mockResolvedValueOnce(dia());
     const user = userEvent.setup();
-    await render(<Dieta />);
+    await renderScreen(<Dieta />);
 
     expect(
       await screen.findByText(
@@ -95,19 +100,20 @@ describe('tela Dieta', () => {
   });
 
   async function preencher(user: User, campos: Record<string, string>) {
-    for (const [rotulo, texto] of Object.entries(campos)) {
-      await user.type(screen.getByLabelText(rotulo), texto);
-    }
     await user.press(
       screen.getByRole('button', { name: 'Adicionar refeição' }),
     );
+    for (const [rotulo, texto] of Object.entries(campos)) {
+      await user.type(screen.getByLabelText(rotulo), texto);
+    }
+    await user.press(screen.getByRole('button', { name: 'Salvar refeição' }));
   }
 
   it('adicionar refeição atualiza o total e as barras', async () => {
     mockGetMeals.mockResolvedValue(dia());
     mockPostMeal.mockImplementation(async (meal) => ({ id: 'm2', ...meal }));
     const user = userEvent.setup();
-    await render(<Dieta />);
+    await renderScreen(<Dieta />);
     await screen.findByText('Almoço');
 
     await preencher(user, {
@@ -125,7 +131,7 @@ describe('tela Dieta', () => {
       carbs: 60,
       fat: 0,
     });
-    expect(await screen.findByText('1200 / 2000 kcal')).toBeOnTheScreen();
+    expect(await screen.findByText('Faltam 800 kcal')).toBeOnTheScreen();
     expect(screen.getByText('71 / 140 g')).toBeOnTheScreen();
     expect(
       screen.getByRole('progressbar', { name: 'Calorias' }),
@@ -133,13 +139,13 @@ describe('tela Dieta', () => {
       now: 60,
     });
     expect(screen.getByText('Jantar')).toBeOnTheScreen();
-    expect(screen.getByLabelText('Nome')).toHaveDisplayValue('');
+    expect(screen.queryByLabelText('Nome')).not.toBeOnTheScreen();
   });
 
   it('valida os campos (números positivos) e não chama a API', async () => {
     mockGetMeals.mockResolvedValue(dia());
     const user = userEvent.setup();
-    await render(<Dieta />);
+    await renderScreen(<Dieta />);
     await screen.findByText('Almoço');
 
     await preencher(user, { 'Calorias (kcal)': '-5', 'Gorduras (g)': 'abc' });
@@ -150,14 +156,14 @@ describe('tela Dieta', () => {
     ).toBeOnTheScreen();
     expect(screen.getByText('Use um número positivo.')).toBeOnTheScreen();
     expect(mockPostMeal).not.toHaveBeenCalled();
-    expect(screen.getByText('500 / 2000 kcal')).toBeOnTheScreen();
+    expect(screen.getByText('Faltam 1500 kcal')).toBeOnTheScreen();
   });
 
   it('erro ao salvar mostra mensagem e mantém o que foi digitado', async () => {
     mockGetMeals.mockResolvedValue(dia());
     mockPostMeal.mockRejectedValue(new Error('rede'));
     const user = userEvent.setup();
-    await render(<Dieta />);
+    await renderScreen(<Dieta />);
     await screen.findByText('Almoço');
 
     await preencher(user, { Nome: 'Jantar', 'Calorias (kcal)': '700' });
@@ -168,7 +174,7 @@ describe('tela Dieta', () => {
       ),
     ).toBeOnTheScreen();
     expect(screen.getByLabelText('Nome')).toHaveDisplayValue('Jantar');
-    expect(screen.getByText('500 / 2000 kcal')).toBeOnTheScreen();
+    expect(screen.getByText('Faltam 1500 kcal')).toBeOnTheScreen();
   });
 });
 
