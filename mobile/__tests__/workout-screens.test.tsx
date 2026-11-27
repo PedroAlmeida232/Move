@@ -245,7 +245,7 @@ describe('tela Hoje', () => {
 describe('tela Plano', () => {
   it('abre no dia de hoje e mostra os exercícios do plano', async () => {
     mockGetPlan.mockResolvedValue(plano);
-    await render(<Plano />);
+    await renderScreen(<Plano />);
 
     expect(await screen.findByText('Costas e postura')).toBeOnTheScreen();
     expect(
@@ -258,7 +258,7 @@ describe('tela Plano', () => {
   it('troca o dia da semana', async () => {
     mockGetPlan.mockResolvedValue(plano);
     const user = userEvent.setup();
-    await render(<Plano />);
+    await renderScreen(<Plano />);
     await screen.findByText('Costas e postura');
 
     await user.press(screen.getByRole('button', { name: 'Seg' }));
@@ -271,19 +271,19 @@ describe('tela Plano', () => {
   it('mostra descanso em dia sem exercícios', async () => {
     mockGetPlan.mockResolvedValue(plano);
     const user = userEvent.setup();
-    await render(<Plano />);
+    await renderScreen(<Plano />);
     await screen.findByText('Costas e postura');
 
     await user.press(screen.getByRole('button', { name: 'Dom' }));
 
-    expect(screen.getByText('Descanso')).toBeOnTheScreen();
+    expect(screen.getByText('Dia de descanso')).toBeOnTheScreen();
   });
 
   it('mostra carregando e erro com nova tentativa', async () => {
     mockGetPlan.mockRejectedValueOnce(new Error('x'));
     mockGetPlan.mockResolvedValueOnce(plano);
     const user = userEvent.setup();
-    await render(<Plano />);
+    await renderScreen(<Plano />);
 
     expect(
       await screen.findByText(
@@ -298,8 +298,10 @@ describe('tela Plano', () => {
 
   it('mostra o estado de carregando', async () => {
     mockGetPlan.mockReturnValue(new Promise(() => {}));
-    await render(<Plano />);
+    await renderScreen(<Plano />);
 
-    expect(screen.getByText('Carregando treino…')).toBeOnTheScreen();
+    expect(
+      screen.getAllByRole('progressbar', { name: 'Carregando' }).length,
+    ).toBeGreaterThan(0);
   });
 });
