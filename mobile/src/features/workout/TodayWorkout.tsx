@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import {
   initialSets,
@@ -7,10 +7,21 @@ import {
   workoutProgress,
   type ExerciseSets,
 } from '../../domain/workout';
-import { fonts, useTheme } from '../../lib/theme';
-import { ErrorText, PrimaryButton } from '../../lib/ui';
+import {
+  fonts,
+  radius,
+  space,
+  touchTarget,
+  type,
+  useTheme,
+} from '../../lib/theme';
+import { ErrorText } from '../../lib/ui';
+import { Button } from '../../lib/ui/Button';
+import { Card } from '../../lib/ui/Card';
+import { ProgressBar } from '../../lib/ui/ProgressBar';
 
 import { postWorkout, type PlanDay, type WorkoutInput } from './api';
+import { SetCheck } from './SetCheck';
 
 type Save = 'idle' | 'saving' | 'error' | 'saved';
 
@@ -67,43 +78,23 @@ export function TodayWorkout({
 
   return (
     <View style={styles.stack}>
-      <Text
-        accessibilityRole="header"
-        style={[styles.h2, { color: theme.ink }]}
-      >
-        {day.name}
-      </Text>
-      <View
-        accessible
-        accessibilityLabel="Progresso do treino"
-        accessibilityRole="progressbar"
-        accessibilityValue={{ min: 0, max: 100, now: progress.pct }}
-      >
-        <Text style={[styles.small, { color: theme.muted }]}>
+      <View style={styles.progress}>
+        <Text style={[styles.caption, { color: theme.muted }]}>
           {progress.done} de {progress.total} séries
         </Text>
-        <View style={[styles.track, { backgroundColor: theme.fill }]}>
-          <View
-            style={{
-              width: `${progress.pct}%`,
-              height: 6,
-              backgroundColor: theme.blue,
-            }}
-          />
-        </View>
+        <ProgressBar label="Progresso do treino" value={progress.pct} />
       </View>
 
       {day.exercises.map((exercise, ei) => (
-        <View
-          key={exercise.id}
-          style={[styles.card, { backgroundColor: theme.card }]}
-        >
-          <Text style={[styles.exercise, { color: theme.ink }]}>
-            {exercise.name}
-          </Text>
-          <Text style={[styles.small, { color: theme.muted }]}>
-            {exercise.sets} × {exercise.reps}
-          </Text>
+        <Card key={exercise.id} testID={`exercicio-${exercise.id}`}>
+          <View>
+            <Text style={[styles.exercise, { color: theme.ink }]}>
+              {exercise.name}
+            </Text>
+            <Text style={[styles.caption, { color: theme.muted }]}>
+              {exercise.sets} × {exercise.reps}
+            </Text>
+          </View>
           {exercises[ei].sets.map((set, i) => (
             <View key={i} style={styles.setRow}>
               <Text style={[styles.setNumber, { color: theme.muted }]}>
@@ -135,33 +126,15 @@ export function TodayWorkout({
                   { backgroundColor: theme.fill, color: theme.ink },
                 ]}
               />
-              <Pressable
-                accessibilityRole="checkbox"
-                accessibilityLabel={`Concluir série ${i + 1} de ${exercise.name}`}
-                accessibilityState={{
-                  checked: set.done,
-                  disabled: save === 'saved',
-                }}
+              <SetCheck
+                label={`Concluir série ${i + 1} de ${exercise.name}`}
+                checked={set.done}
                 disabled={save === 'saved'}
-                onPress={() => update(exercise.id, i, { done: !set.done })}
-                hitSlop={6}
-                style={[
-                  styles.check,
-                  {
-                    borderColor: theme.blue,
-                    backgroundColor: set.done ? theme.blue : 'transparent',
-                  },
-                ]}
-              >
-                {set.done ? (
-                  <Text style={{ color: theme.onBlue, fontWeight: '700' }}>
-                    ✓
-                  </Text>
-                ) : null}
-              </Pressable>
+                onToggle={() => update(exercise.id, i, { done: !set.done })}
+              />
             </View>
           ))}
-        </View>
+        </Card>
       ))}
 
       {save === 'error' ? (
@@ -170,15 +143,15 @@ export function TodayWorkout({
       {save === 'saved' ? (
         <Text
           accessibilityRole="alert"
-          style={[styles.done, { color: theme.blue }]}
+          style={[styles.done, { color: theme.sucesso }]}
         >
           Treino concluído!
         </Text>
       ) : (
-        <PrimaryButton
+        <Button
           title="Concluir treino"
           onPress={finish}
-          busy={save === 'saving'}
+          loading={save === 'saving'}
           disabled={!progress.complete}
         />
       )}
@@ -187,33 +160,24 @@ export function TodayWorkout({
 }
 
 const styles = StyleSheet.create({
-  stack: { gap: 12 },
-  h2: { fontFamily: fonts.native, fontSize: 22, fontWeight: '700' },
-  small: { fontFamily: fonts.native, fontSize: 13, marginBottom: 4 },
-  track: { height: 6, borderRadius: 3, overflow: 'hidden' },
-  card: { borderRadius: 14, padding: 14, gap: 8 },
-  exercise: { fontFamily: fonts.native, fontSize: 17, fontWeight: '600' },
-  setRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  setNumber: { width: 18, textAlign: 'center', fontFamily: fonts.native },
+  stack: { gap: space.md },
+  progress: { gap: space.xs },
+  caption: { fontFamily: fonts.native, ...type.caption },
+  exercise: { fontFamily: fonts.native, ...type.headline },
+  setRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  setNumber: {
+    width: space.lg,
+    textAlign: 'center',
+    fontFamily: fonts.native,
+    ...type.callout,
+  },
   input: {
     flex: 1,
-    minHeight: 44,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    fontSize: 16,
-  },
-  check: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  done: {
+    minHeight: touchTarget,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
     fontFamily: fonts.native,
-    fontSize: 18,
-    fontWeight: '700',
-    textAlign: 'center',
+    ...type.body,
   },
+  done: { fontFamily: fonts.native, ...type.title, textAlign: 'center' },
 });

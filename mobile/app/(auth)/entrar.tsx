@@ -17,7 +17,7 @@ import {
 import { SocialButtons } from '../../src/features/auth/SocialButtons';
 import { useAuth } from '../../src/lib/auth';
 import { POLICY_URL } from '../../src/lib/links';
-import { fonts, useTheme } from '../../src/lib/theme';
+import { fonts, type, useTheme } from '../../src/lib/theme';
 
 export default function Entrar() {
   const { signIn } = useAuth();
@@ -93,7 +93,7 @@ export default function Entrar() {
       />
       <SocialButtons />
       <Text
-        style={{ color: theme.muted, fontFamily: fonts.native, fontSize: 13 }}
+        style={{ color: theme.muted, fontFamily: fonts.native, ...type.caption }}
       >
         Ao continuar com Apple ou Google, você autoriza o Move a tratar seus
         dados de saúde (peso, treino e dieta) para oferecer o app.
