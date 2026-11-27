@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import {
+  formatLastLoad,
   initialSets,
   setsToPayload,
   workoutProgress,
   type ExerciseSets,
+  type LastLoad,
 } from '../../domain/workout';
+import { formatNumber } from '../../domain/format';
 import {
   fonts,
   radius,
@@ -21,6 +24,7 @@ import { Card } from '../../lib/ui/Card';
 import { ProgressBar } from '../../lib/ui/ProgressBar';
 
 import { postWorkout, type PlanDay, type WorkoutInput } from './api';
+import { RestTimer } from './RestTimer';
 import { SetCheck } from './SetCheck';
 
 type Save = 'idle' | 'saving' | 'error' | 'saved';
@@ -28,8 +32,11 @@ type Save = 'idle' | 'saving' | 'error' | 'saved';
 export function TodayWorkout({
   day,
   onFinished,
+  lastLoads = {},
 }: {
   day: PlanDay;
+  /** Carga da última vez por exercício (do histórico). */
+  lastLoads?: Record<string, LastLoad>;
   /** Chamado depois que o treino foi salvo na API. */
   onFinished?: (workout: WorkoutInput) => void;
 }) {
@@ -38,6 +45,9 @@ export function TodayWorkout({
     day.exercises.map((e) => ({ exerciseId: e.id, sets: initialSets(e.sets) })),
   );
   const [save, setSave] = useState<Save>('idle');
+  // Muda a cada série marcada, para o cronômetro recomeçar do zero.
+  const [rest, setRest] = useState(0);
+  const endRest = useCallback(() => setRest(0), []);
   const progress = workoutProgress(exercises);
 
   function update(
@@ -94,6 +104,11 @@ export function TodayWorkout({
             <Text style={[styles.caption, { color: theme.muted }]}>
               {exercise.sets} × {exercise.reps}
             </Text>
+            {lastLoads[exercise.id] ? (
+              <Text style={[styles.caption, { color: theme.blue }]}>
+                Da última vez: {formatLastLoad(lastLoads[exercise.id])}
+              </Text>
+            ) : null}
           </View>
           {exercises[ei].sets.map((set, i) => (
             <View key={i} style={styles.setRow}>
@@ -102,7 +117,11 @@ export function TodayWorkout({
               </Text>
               <TextInput
                 accessibilityLabel={`Carga da série ${i + 1} de ${exercise.name}`}
-                placeholder="kg"
+                placeholder={
+                  lastLoads[exercise.id]
+                    ? formatNumber(lastLoads[exercise.id].kg)
+                    : 'kg'
+                }
                 placeholderTextColor={theme.muted}
                 keyboardType="decimal-pad"
                 value={set.kg}
@@ -130,12 +149,19 @@ export function TodayWorkout({
                 label={`Concluir série ${i + 1} de ${exercise.name}`}
                 checked={set.done}
                 disabled={save === 'saved'}
-                onToggle={() => update(exercise.id, i, { done: !set.done })}
+                onToggle={() => {
+                  update(exercise.id, i, { done: !set.done });
+                  if (!set.done) setRest((n) => n + 1);
+                }}
               />
             </View>
           ))}
         </Card>
       ))}
+
+      {rest > 0 && save !== 'saved' ? (
+        <RestTimer key={rest} onDone={endRest} />
+      ) : null}
 
       {save === 'error' ? (
         <ErrorText>Não foi possível salvar o treino. Tente de novo.</ErrorText>
