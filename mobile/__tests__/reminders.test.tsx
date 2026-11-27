@@ -5,6 +5,7 @@ import Ajustes from '../app/ajustes';
 import { getPlan } from '../src/features/workout/api';
 import { useAuth } from '../src/lib/auth';
 import { renderScreen } from '../test-utils/renderScreen';
+import { deleteAccount } from '../src/features/account/api';
 
 jest.mock('expo-notifications', () => ({
   getAllScheduledNotificationsAsync: jest.fn(),
@@ -89,5 +90,39 @@ describe('lembretes', () => {
     ).toBeOnTheScreen();
     expect(N.scheduleNotificationAsync).not.toHaveBeenCalled();
     expect(screen.getByRole('switch', { name: 'Lembrar de se pesar' })).not.toBeChecked();
+  });
+});
+
+describe('lembretes ao sair da conta', () => {
+  const agendados = [{ identifier: 'treino-5' }, { identifier: 'peso' }];
+
+  it('Sair cancela todos os lembretes antes de encerrar a sessão', async () => {
+    const signOut = jest.fn();
+    (useAuth as jest.Mock).mockReturnValue({ signOut, user: { email: 'p@x.com' } });
+    N.getAllScheduledNotificationsAsync.mockResolvedValue(agendados);
+    const user = userEvent.setup();
+    await renderScreen(<Ajustes />);
+
+    await user.press(screen.getByRole('button', { name: 'Sair' }));
+
+    expect(N.cancelScheduledNotificationAsync).toHaveBeenCalledWith('treino-5');
+    expect(N.cancelScheduledNotificationAsync).toHaveBeenCalledWith('peso');
+    expect(signOut).toHaveBeenCalled();
+  });
+
+  it('excluir a conta também cancela os lembretes', async () => {
+    const signOut = jest.fn();
+    (useAuth as jest.Mock).mockReturnValue({ signOut, user: { email: 'p@x.com' } });
+    (deleteAccount as jest.Mock).mockResolvedValue(undefined);
+    N.getAllScheduledNotificationsAsync.mockResolvedValue(agendados);
+    const user = userEvent.setup();
+    await renderScreen(<Ajustes />);
+
+    await user.press(screen.getByRole('button', { name: 'Excluir conta' }));
+    await user.press(screen.getByRole('button', { name: 'Excluir definitivamente' }));
+
+    expect(N.cancelScheduledNotificationAsync).toHaveBeenCalledWith('treino-5');
+    expect(N.cancelScheduledNotificationAsync).toHaveBeenCalledWith('peso');
+    expect(signOut).toHaveBeenCalled();
   });
 });
