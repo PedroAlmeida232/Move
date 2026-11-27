@@ -3,8 +3,16 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { authErrorMessage } from '../../domain/auth-errors';
 import { useAuth, type SocialResult } from '../../lib/auth';
-import { fonts, useTheme } from '../../lib/theme';
+import {
+  fonts,
+  radius,
+  space,
+  touchTarget,
+  type,
+  useTheme,
+} from '../../lib/theme';
 import { ErrorText } from '../../lib/ui';
+import { Icon, type IconName } from '../../lib/ui/Icon';
 
 type Provider = 'apple' | 'google';
 
@@ -47,6 +55,7 @@ export function SocialButtons({
       {Platform.OS === 'ios' ? (
         <SocialButton
           title="Continuar com Apple"
+          icon="logo-apple"
           busy={busy === 'apple'}
           disabled={busy !== null}
           onPress={() => start('apple', signInWithApple)}
@@ -56,6 +65,7 @@ export function SocialButtons({
       ) : null}
       <SocialButton
         title="Continuar com Google"
+        icon="logo-google"
         busy={busy === 'google'}
         disabled={busy !== null}
         onPress={() => start('google', signInWithGoogle)}
@@ -70,6 +80,7 @@ export function SocialButtons({
 
 function SocialButton({
   title,
+  icon,
   onPress,
   busy,
   disabled,
@@ -78,6 +89,7 @@ function SocialButton({
   border,
 }: {
   title: string;
+  icon: IconName;
   onPress: () => void;
   busy: boolean;
   disabled: boolean;
@@ -101,21 +113,25 @@ function SocialButton({
         },
       ]}
     >
+      <Icon name={icon} color={color} />
       <Text style={[styles.text, { color }]}>{busy ? 'Aguarde…' : title}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  stack: { gap: 12 },
-  divider: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  stack: { gap: space.md },
+  divider: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   line: { flex: 1, height: StyleSheet.hairlineWidth },
+  // Apple e Google pedem a mesma altura e cantos do botão principal, com o logo à esquerda do texto.
   button: {
-    minHeight: 50,
-    borderRadius: 14,
+    minHeight: touchTarget + space.sm,
+    borderRadius: radius.md,
     borderWidth: 1,
+    flexDirection: 'row',
+    gap: space.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  text: { fontFamily: fonts.native, fontSize: 17, fontWeight: '600' },
+  text: { fontFamily: fonts.native, ...type.headline },
 });

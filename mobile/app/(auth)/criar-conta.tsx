@@ -24,7 +24,7 @@ import {
 import { SocialButtons } from '../../src/features/auth/SocialButtons';
 import { useAuth } from '../../src/lib/auth';
 import { POLICY_URL } from '../../src/lib/links';
-import { fonts, useTheme } from '../../src/lib/theme';
+import { fonts, type, useTheme } from '../../src/lib/theme';
 
 const CONSENT_REQUIRED =
   'Para criar a conta, aceite o uso dos seus dados de saúde.';
@@ -158,7 +158,6 @@ const styles = StyleSheet.create({
   consentText: {
     flex: 1,
     fontFamily: fonts.native,
-    fontSize: 15,
-    lineHeight: 21,
+    ...type.callout,
   },
 });

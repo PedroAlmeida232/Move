@@ -12,7 +12,7 @@ import {
   TextLink,
 } from '../../src/lib/ui';
 import { useAuth } from '../../src/lib/auth';
-import { fonts, useTheme } from '../../src/lib/theme';
+import { fonts, type, useTheme } from '../../src/lib/theme';
 
 const SENT =
   'Se existir uma conta com esse e-mail, enviamos um link para redefinir a senha.';
@@ -70,7 +70,7 @@ export default function RecuperarSenha() {
         <Text
           accessibilityRole="alert"
           accessibilityLiveRegion="polite"
-          style={{ color: theme.ink, fontFamily: fonts.native, fontSize: 15 }}
+          style={{ color: theme.ink, fontFamily: fonts.native, ...type.callout }}
         >
           {SENT}
         </Text>
