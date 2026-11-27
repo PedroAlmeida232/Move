@@ -27,3 +27,12 @@ Direção visual: estilo Apple (fundo cinza-claro, cards brancos arredondados, a
 - [x] **D08** · [MOB] Progresso e conquistas · `feature/design-progress` · https://trello.com/c/Op4JUnop · depende: D04
 - [x] **D09** · [MOB] Login e Ajustes · `feature/design-auth-settings` · https://trello.com/c/syvwRNMq · depende: D02
 - [x] **D10** · [MOB] Polimento e acessibilidade · `feature/design-polish` · https://trello.com/c/Ae9yVBB8 · depende: D04 a D09
+
+## Sprint 7 · Melhorias antes do lançamento
+
+A busca de alimentos vem em três fatias, cada uma útil sozinha: repetir refeição (P01), catálogo no backend (B14, fila do backend) e buscar alimento no app (P03).
+
+- [ ] **P01** · [MOB] Repetir refeição · `feature/repeat-meal` · https://trello.com/c/JBBUqLXr · depende: D06
+- [ ] **P02** · [MOB] Carga da última vez e descanso no treino · `feature/workout-last-load` · https://trello.com/c/WGWlaUSN · depende: D05
+- [ ] **M11** · [MOB][INFRA] Atualizações sem passar pela revisão (expo-updates) · `feature/ota-updates` · https://trello.com/c/bipuEjzD · depende: M10. Parte humana: `eas update`.
+- [ ] **P03** · [MOB] Buscar alimento e informar os gramas · `feature/food-search` · https://trello.com/c/0QQLf5wN · depende: P01 e B14
