@@ -1,4 +1,5 @@
 import { screen, userEvent } from '@testing-library/react-native';
+import { File } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
 import Ajustes from '../app/ajustes';
@@ -11,14 +12,7 @@ import { fakeToday } from '../test-utils/fakeToday';
 import { renderScreen } from '../test-utils/renderScreen';
 
 const mockWrite = jest.fn();
-jest.mock('expo-file-system', () => ({
-  Paths: { cache: 'cache' },
-  File: jest.fn().mockImplementation((_dir: string, name: string) => ({
-    uri: `file:///cache/${name}`,
-    create: jest.fn(),
-    write: (text: string) => mockWrite(name, text),
-  })),
-}));
+jest.mock('expo-file-system', () => ({ Paths: { cache: 'cache' }, File: jest.fn() }));
 jest.mock('expo-sharing', () => ({ shareAsync: jest.fn() }));
 jest.mock('../src/lib/auth', () => ({ useAuth: jest.fn() }));
 jest.mock('../src/features/account/api', () => ({ deleteAccount: jest.fn() }));
@@ -43,6 +37,12 @@ function dados() {
 beforeEach(() => {
   jest.resetAllMocks();
   fakeToday(new Date(2026, 10, 27, 17, 0));
+  // O arquivo fica em memória: o teste lê o nome e o texto gravados.
+  (File as unknown as jest.Mock).mockImplementation((_dir: string, name: string) => ({
+    uri: `file:///cache/${name}`,
+    create: jest.fn(),
+    write: (text: string) => mockWrite(name, text),
+  }));
   (useAuth as jest.Mock).mockReturnValue({
     signOut: jest.fn(),
     user: { email: 'pedro@exemplo.com' },
