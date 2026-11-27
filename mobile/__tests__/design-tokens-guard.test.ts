@@ -16,7 +16,6 @@ const PENDENTES = [
   'app/(auth)/recuperar-senha.tsx',
   'app/ajustes.tsx',
   'src/features/auth/SocialButtons.tsx',
-  'src/features/progress/LevelUp.tsx',
 ];
 
 function sourceFiles(dir: string): string[] {

@@ -1,7 +1,8 @@
 import { Modal, StyleSheet, Text, View } from 'react-native';
 
-import { fonts, useTheme } from '../../lib/theme';
-import { PrimaryButton } from '../../lib/ui';
+import { fonts, iconSize, radius, space, type, useTheme } from '../../lib/theme';
+import { Button } from '../../lib/ui/Button';
+import { Icon } from '../../lib/ui/Icon';
 
 /** Celebração simples de nível novo (sem animação pesada). */
 export function LevelUp({
@@ -19,18 +20,14 @@ export function LevelUp({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.backdrop}>
+      <View style={[styles.backdrop, { backgroundColor: theme.scrim }]}>
         <View
           accessibilityViewIsModal
           style={[styles.card, { backgroundColor: theme.card }]}
         >
-          <Text
-            style={styles.emoji}
-            accessibilityElementsHidden
-            importantForAccessibility="no"
-          >
-            🎉
-          </Text>
+          <View style={[styles.badge, { backgroundColor: theme.tint }]}>
+            <Icon name="trophy" color={theme.blue} size={iconSize.lg} />
+          </View>
           <Text
             accessibilityRole="header"
             style={[styles.title, { color: theme.ink }]}
@@ -40,7 +37,7 @@ export function LevelUp({
           <Text style={[styles.text, { color: theme.muted }]}>
             Você chegou ao nível {level}.
           </Text>
-          <PrimaryButton title="Continuar" onPress={onClose} />
+          <Button title="Continuar" onPress={onClose} />
         </View>
       </View>
     </Modal>
@@ -50,29 +47,26 @@ export function LevelUp({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,.45)',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
+    padding: space.xl,
   },
   card: {
     width: '100%',
     maxWidth: 360,
-    borderRadius: 20,
-    padding: 24,
-    gap: 12,
+    borderRadius: radius.lg,
+    padding: space.xl,
+    gap: space.md,
+    alignItems: 'stretch',
   },
-  emoji: { fontSize: 44, textAlign: 'center' },
-  title: {
-    fontFamily: fonts.native,
-    fontSize: 26,
-    fontWeight: '700',
-    textAlign: 'center',
+  badge: {
+    alignSelf: 'center',
+    width: 72,
+    height: 72,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  text: {
-    fontFamily: fonts.native,
-    fontSize: 17,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
+  title: { fontFamily: fonts.native, ...type.title, textAlign: 'center' },
+  text: { fontFamily: fonts.native, ...type.body, textAlign: 'center' },
 });
