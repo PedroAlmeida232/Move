@@ -5,11 +5,19 @@ import { StyleSheet, Text, View } from 'react-native';
 import {
   dayTotals,
   goalPct,
+  recentMeals,
   validateMeal,
   type MealForm,
+  type MealInput,
 } from '../../src/domain/diet';
 import { formatNumber } from '../../src/domain/format';
-import { getMeals, postMeal, type DayMeals } from '../../src/features/meal/api';
+import {
+  getMealHistory,
+  getMeals,
+  postMeal,
+  type DayMeals,
+  type Meal,
+} from '../../src/features/meal/api';
 import { GoalBar } from '../../src/features/meal/GoalBar';
 import { fonts, space, type, useTheme } from '../../src/lib/theme';
 import { todayKey } from '../../src/lib/time';
@@ -38,7 +46,11 @@ const FIELDS: { key: keyof MealForm; label: string; numeric: boolean }[] = [
 export default function Dieta() {
   const [today] = useState(todayKey);
   const day = useResource(() => getMeals(today));
+  // Histórico para "Recentes" na folha. Se falhar, a folha só não mostra a seção.
+  const history = useResource(async () => (await getMealHistory()).meals);
   const [open, setOpen] = useState(false);
+  const recents =
+    history.state.status === 'ready' ? recentMeals(history.state.data) : [];
 
   let content;
   if (day.state.status === 'loading') {
@@ -65,9 +77,11 @@ export default function Dieta() {
         <AddMealSheet
           visible={open}
           date={today}
+          recents={recents}
           onClose={() => setOpen(false)}
           onSaved={(meal) => {
             day.update((d) => ({ ...d, meals: [...d.meals, meal] }));
+            history.update((list) => [...list, meal]);
             setOpen(false);
           }}
         />
@@ -169,14 +183,17 @@ function MealList({ meals }: { meals: DayMeals['meals'] }) {
 function AddMealSheet({
   visible,
   date,
+  recents,
   onClose,
   onSaved,
 }: {
   visible: boolean;
   date: string;
+  recents: MealInput[];
   onClose: () => void;
-  onSaved: (meal: DayMeals['meals'][number]) => void;
+  onSaved: (meal: Meal) => void;
 }) {
+  const theme = useTheme();
   const [form, setForm] = useState<MealForm>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof MealForm, string>>>(
     {},
@@ -191,17 +208,14 @@ function AddMealSheet({
     onClose();
   }
 
-  async function save() {
-    const { errors: found, meal } = validateMeal(form);
-    setErrors(found);
+  async function post(meal: MealInput) {
     setSaveError(false);
-    if (!meal) return;
-
     setBusy(true);
     try {
       const saved = await postMeal({ ...meal, date });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setForm(EMPTY);
+      setErrors({});
       onSaved(saved);
     } catch {
       setSaveError(true);
@@ -209,8 +223,41 @@ function AddMealSheet({
     setBusy(false);
   }
 
+  function save() {
+    const { errors: found, meal } = validateMeal(form);
+    setErrors(found);
+    setSaveError(false);
+    if (meal) return post(meal);
+  }
+
   return (
     <Sheet visible={visible} title="Nova refeição" onClose={close}>
+      {recents.length > 0 ? (
+        <View accessibilityLabel="Refeições recentes" style={styles.section}>
+          <Text
+            accessibilityRole="header"
+            style={[styles.caption, { color: theme.muted }]}
+          >
+            Recentes
+          </Text>
+          <Card>
+            {recents.map((meal) => (
+              <ListRow
+                key={meal.name}
+                icon="refresh-outline"
+                title={meal.name}
+                value={`${Math.round(meal.kcal)} kcal`}
+                onPress={() => {
+                  if (!busy) post(meal);
+                }}
+              />
+            ))}
+          </Card>
+          <Text style={[styles.caption, { color: theme.muted }]}>
+            Ou digite uma nova
+          </Text>
+        </View>
+      ) : null}
       {FIELDS.map(({ key, label, numeric }) => (
         <Field
           key={key}
@@ -241,4 +288,5 @@ const styles = StyleSheet.create({
   status: { fontFamily: fonts.native, ...type.headline },
   section: { gap: space.sm },
   sectionTitle: { fontFamily: fonts.native, ...type.title },
+  caption: { fontFamily: fonts.native, ...type.caption },
 });
