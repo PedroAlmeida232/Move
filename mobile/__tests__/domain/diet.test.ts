@@ -144,6 +144,14 @@ describe('recentMeals', () => {
     ]);
   });
 
+  it('refeições diferentes no mesmo dia: a registrada por último vem antes', () => {
+    const lista = recentMeals([
+      meal('2026-11-21', 'Café'),
+      meal('2026-11-21', 'Almoço'),
+    ]);
+    expect(lista.map((m) => m.name)).toEqual(['Almoço', 'Café']);
+  });
+
   it('limita a 8 por padrão, ou ao limite pedido', () => {
     const muitas = Array.from({ length: 12 }, (_, i) =>
       meal(`2026-11-${String(10 + i).padStart(2, '0')}`, `R${i}`),
