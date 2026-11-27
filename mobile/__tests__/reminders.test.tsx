@@ -5,6 +5,7 @@ import Ajustes from '../app/ajustes';
 import { getPlan } from '../src/features/workout/api';
 import { useAuth } from '../src/lib/auth';
 import { renderScreen } from '../test-utils/renderScreen';
+import { deleteAccount } from '../src/features/account/api';
 
 jest.mock('expo-notifications', () => ({
   getAllScheduledNotificationsAsync: jest.fn(),
@@ -15,7 +16,6 @@ jest.mock('expo-notifications', () => ({
 }));
 jest.mock('../src/lib/auth', () => ({ useAuth: jest.fn() }));
 jest.mock('../src/features/account/api', () => ({ deleteAccount: jest.fn() }));
-import { deleteAccount } from '../src/features/account/api';
 jest.mock('../src/features/workout/api', () => ({ getPlan: jest.fn() }));
 
 const N = Notifications as unknown as Record<string, jest.Mock>;
