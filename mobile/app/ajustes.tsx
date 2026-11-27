@@ -2,15 +2,18 @@ import { useState } from 'react';
 import { Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { deleteAccount } from '../src/features/account/api';
+import { exportMyData } from '../src/features/account/exportData';
 import { useAuth } from '../src/lib/auth';
 import { POLICY_URL } from '../src/lib/links';
 import { fonts, space, type, useTheme } from '../src/lib/theme';
+import { todayKey } from '../src/lib/time';
 import { ErrorText } from '../src/lib/ui';
 import { Button } from '../src/lib/ui/Button';
 import { Card } from '../src/lib/ui/Card';
 import { ListRow } from '../src/lib/ui/ListRow';
 
 type Exclusao = 'fechada' | 'confirmando' | 'excluindo' | 'erro';
+type Exportacao = 'parada' | 'preparando' | 'pronta' | 'erro';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   const theme = useTheme();
@@ -32,6 +35,18 @@ export default function Ajustes() {
   const { signOut, user } = useAuth();
   const [exclusao, setExclusao] = useState<Exclusao>('fechada');
   const excluindo = exclusao === 'excluindo';
+  const [exportacao, setExportacao] = useState<Exportacao>('parada');
+
+  async function exportar() {
+    if (exportacao === 'preparando') return;
+    setExportacao('preparando');
+    try {
+      await exportMyData(user?.email ?? null, todayKey());
+      setExportacao('pronta');
+    } catch {
+      setExportacao('erro');
+    }
+  }
 
   async function excluir() {
     setExclusao('excluindo');
@@ -72,6 +87,23 @@ export default function Ajustes() {
           title="Política de privacidade"
           onPress={() => Linking.openURL(POLICY_URL)}
         />
+        <ListRow
+          icon="download-outline"
+          title="Exportar meus dados"
+          subtitle={exportacao === 'preparando' ? 'Preparando…' : undefined}
+          onPress={exportar}
+        />
+        {exportacao === 'pronta' ? (
+          <Text
+            accessibilityRole="alert"
+            style={[styles.caption, { color: theme.sucesso }]}
+          >
+            Dados exportados
+          </Text>
+        ) : null}
+        {exportacao === 'erro' ? (
+          <ErrorText>Não foi possível exportar seus dados. Tente de novo.</ErrorText>
+        ) : null}
       </Section>
 
       <Card>
@@ -122,5 +154,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
   },
   confirm: { gap: space.md },
+  caption: { fontFamily: fonts.native, ...type.caption },
   text: { fontFamily: fonts.native, ...type.body },
 });

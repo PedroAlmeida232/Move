@@ -36,3 +36,5 @@ A busca de alimentos vem em três fatias, cada uma útil sozinha: repetir refei�
 - [x] **P02** · [MOB] Carga da última vez e descanso no treino · `feature/workout-last-load` · https://trello.com/c/WGWlaUSN · depende: D05
 - [ ] **M11** · [MOB][INFRA] Atualizações sem passar pela revisão (expo-updates) · `feature/ota-updates` · https://trello.com/c/bipuEjzD · depende: —. Código pronto; precisa entrar antes do primeiro build de produção (M10). Aceite humano: `eas update` chegando no app do TestFlight.
 - [ ] **P03** · [MOB] Buscar alimento e informar os gramas · `feature/food-search` · https://trello.com/c/0QQLf5wN · depende: P01 e B14
+- [x] **P05** · [MOB] Exportar meus dados (LGPD) · `feature/export-data` · https://trello.com/c/DNHbYsQL · depende: D09
+- [ ] **P04** · [MOB] Lembretes locais de treino e peso · `feature/reminders` · https://trello.com/c/Lj1bcvYR · depende: D09. Pacote nativo novo: entra antes do build de produção.
