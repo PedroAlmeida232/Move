@@ -50,6 +50,7 @@ export function Screen({
       <View style={styles.header}>
         <Text
           accessibilityRole="header"
+          maxFontSizeMultiplier={1.4}
           style={[styles.title, { color: theme.ink }]}
         >
           {title}

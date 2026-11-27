@@ -20,7 +20,14 @@ export function StatTile({
       accessibilityLabel={`${label}: ${value}`}
       style={styles.tile}
     >
-      <Text style={[styles.value, { color: color ?? theme.ink }]}>{value}</Text>
+      <Text
+        maxFontSizeMultiplier={1.4}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        style={[styles.value, { color: color ?? theme.ink }]}
+      >
+        {value}
+      </Text>
       <Text style={[styles.label, { color: theme.muted }]}>{label}</Text>
     </View>
   );
